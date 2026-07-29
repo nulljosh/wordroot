@@ -5,4 +5,4 @@
 - [ ] Full Wiktionary dump parse still pending (v1 uses live REST API instead) — large scoped feature (build-order step 2, "the real risk gate" per CLAUDE.md), not a quick pass; needs its own session
 
 ## From App Store.pdf (imported 2026-07-28)
-- [ ] Create an app icon for Wordroot (etyma's App Store name, ASC 6794988021) — no icon designed yet. Use the clrs.cc palette per the cross-repo icon color pass.
+- [x] Create an app icon for Wordroot — DONE 2026-07-28: reused existing `icon.svg` (word-node/root-branch motif, already using a distinct dark-blue/green palette, not previously wired into the iOS asset catalog). Generated 16–1024px PNGs into `ios/Sources/Assets.xcassets/AppIcon.appiconset/`, wired `ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon` in project.yml, xcodegen regenerated, iOS build succeeds. Not resubmitted to ASC this pass — asset only.
