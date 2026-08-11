@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct EtymaApp: App {
+struct WordrootApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -123,7 +123,7 @@ struct ContentView: View {
                 }
             }
             .searchable(text: $query, prompt: "Look up a word")
-            .navigationTitle(entry?.word.capitalized ?? "Etyma")
+            .navigationTitle(entry?.word.capitalized ?? "Wordroot")
             .onChange(of: query) { _, q in
                 search(q.trimmingCharacters(in: .whitespaces).lowercased())
             }

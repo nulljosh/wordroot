@@ -3,7 +3,7 @@
 import sqlite3
 from pathlib import Path
 
-con = sqlite3.connect(Path(__file__).parent / "etyma.sqlite")
+con = sqlite3.connect(Path(__file__).parent / "wordroot.sqlite")
 langs = {r[0] for r in con.execute("SELECT ancestor_lang FROM edges WHERE word='water'")}
 assert "ine-pro" in langs, f"water edges missing PIE, got: {langs}"
 n = con.execute("SELECT COUNT(*) FROM edges").fetchone()[0]

@@ -1,4 +1,4 @@
-name: Etyma
+name: Wordroot
 options:
   bundleIdPrefix: com.heyitsmejosh
 settings:
@@ -6,7 +6,7 @@ settings:
   CURRENT_PROJECT_VERSION: 1
   SWIFT_VERSION: "5.9"
 targets:
-  Etyma:
+  Wordroot:
     type: application
     supportedDestinations: [iOS, macOS]
     sources: [Sources]

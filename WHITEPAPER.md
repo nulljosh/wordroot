@@ -1,8 +1,8 @@
-# Etyma Technical Whitepaper
+# Wordroot Technical Whitepaper
 
 **v0.1.0** | July 2026
 
-Etyma is a dictionary with deep etymology. Look up any word and trace it back
+Wordroot is a dictionary with deep etymology. Look up any word and trace it back
 through Latin, Greek, and Proto-Indo-European with an interactive etymology
 chain and cognate links. Web app plus SwiftUI iOS/Mac companion.
 
@@ -20,7 +20,7 @@ pipeline (`pipeline/parse.py`, Python stdlib only) runs:
    word ↔ cognate.
 2. **Graph** — edges accumulate into a word/language graph. Nodes carry
    language code, script, and gloss; edges carry relation type.
-3. **Store** — the graph is written to SQLite (`etyma.sqlite`), one table for
+3. **Store** — the graph is written to SQLite (`wordroot.sqlite`), one table for
    words, one for edges. WordNet fills definition gaps.
 
 Chains are walked at query time by following inherit/derive edges ancestor-ward

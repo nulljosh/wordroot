@@ -1,6 +1,6 @@
 <img src="icon.svg" width="80">
 
-# Etyma
+# Wordroot
 
 ![version](https://img.shields.io/badge/version-0.1.0-blue)
 
@@ -21,7 +21,7 @@ Wiktionary (CC-BY-SA) parsed into a word/edge graph, WordNet fills gaps. No OED,
 
 ## Run
 ```sh
-python3 pipeline/parse.py     # builds etyma.sqlite from sample words
+python3 pipeline/parse.py     # builds wordroot.sqlite from sample words
 python3 pipeline/test_parse.py
 ```
 
