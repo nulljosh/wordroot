@@ -1,25 +1,26 @@
-# Etyma Roadmap
+# Wordroot Roadmap
 
-App Store record: **Wordroot** (app id 6794988021, bundle `com.heyitsmejosh.etyma`)
-Web: https://etyma.heyitsmejosh.com (Cloudflare Pages project `etyma`)
+App Store record: **Wordroot** (app id 6794988021, bundle `com.heyitsmejosh.etyma` — Apple-locked, keeps the old name)
+Repo: `nulljosh/wordroot` · folder `~/Documents/Code/wordroot` (renamed from etyma 2026-08-11)
+Web: https://wordroot.heyitsmejosh.com (Cloudflare Pages project is still named `etyma`; `etyma.heyitsmejosh.com` also still resolves)
 
 ## Ship state 2026-08-11
-iOS 1.0 validates clean (`asc validate` → 0 blocking). Done this pass:
-- content rights, copyright, categories (REFERENCE / EDUCATION), age rating (all NONE + profanity INFREQUENT_OR_MILD — dictionary surfaces vulgar entries)
+iOS 1.0 is **fully submission-ready** — `asc validate` returns 0 blocking errors and App Privacy is published. Done this pass:
+- content rights, copyright, categories (REFERENCE / EDUCATION), age rating (all NONE + profanity INFREQUENT_OR_MILD — a dictionary surfaces vulgar entries)
 - en-US description / keywords / support + marketing URL / subtitle / privacy URL
-- review details (no demo account needed), build 037486c9 attached, encryption compliance = exempt
+- review details (no demo account), build 037486c9 attached, encryption compliance = exempt
 - screenshots: iPhone 6.5" ×3, iPad Pro 12.9" ×2
-- pricing schedule (free) + availability (all territories, auto-add new)
-- landing page + `/privacy.html` deployed
+- pricing schedule (free) + availability in all territories
+- App Privacy published as DATA_NOT_COLLECTED
+- full Etyma → Wordroot rename (app target, sources, site, docs, repo, folder, portfolio link)
 
 ### Blocked
-- [ ] **App Privacy data usages not published** — the only thing stopping submission. Public API cannot do it; needs `asc web privacy publish`, which needs a live ASC web session. Run `asc-login` (2FA prompt), then:
-  `asc web privacy pull --app 6794988021` → declare "Data Not Collected" → `asc web privacy publish --app 6794988021`
-  Then: `asc review submit --app 6794988021 --version 1.0 --platform IOS --build 037486c9-d9b0-4b4f-972f-a1eb449ce8fa --confirm`
-- [ ] Note: Guideline 5.6 suspension freezes submissions until 2026-08-18 (see other apps).
+- [ ] **Do not submit until 2026-08-18** — Guideline 5.6 account-level suspension freeze, see `~/Documents/Code/CLAUDE.md`. On/after Aug 18 the whole submission is one command:
+  `asc review submit --app 6794988021 --version 1.0 --platform IOS --build 037486c9-d9b0-4b4f-972f-a1eb449ce8fa --confirm`
 
 ### macOS 1.0
-Version record exists with the same metadata/review details, but has **no build and no screenshots**. Needs archive → export → `asc builds upload` → Mac screenshots (1280×800 or 2880×1800) → submit. Blocked behind the same App Privacy gate.
+Version record has the same metadata + review details, but **no build and no screenshots**. Needs archive → export → `asc builds upload` → Mac screenshots (1280×800 or 2880×1800) → submit. Same Aug 18 freeze applies.
 
 ## Backlog
-- [ ] Full Wiktionary dump parse still pending (v1 uses live REST API instead) — large scoped feature, needs its own session
+- [ ] Full Wiktionary dump parse still pending (v1 uses the live REST API instead) — large scoped feature, needs its own session
+- [ ] Cloudflare Pages project is still named `etyma` (Pages projects can't be renamed; would need a new project + domain move — cosmetic, low priority)
