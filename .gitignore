@@ -7,3 +7,5 @@ __pycache__/
 xcuserdata/
 *.xcodeproj
 .DS_Store
+.wrangler/
+ios/.asc/artifacts/
