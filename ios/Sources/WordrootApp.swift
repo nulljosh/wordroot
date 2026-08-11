@@ -9,10 +9,22 @@ struct WordrootApp: App {
     }
 }
 
+struct Def: Identifiable {
+    let id: String
+    let n: Int
+    let text: String
+}
+
 struct DefGroup: Identifiable {
     let id = UUID()
     let pos: String
     let defs: [String]
+
+    // ponytail: rows need ids unique across sections, not just within one —
+    // on macOS a bare offset id makes every section render the first one's rows.
+    var items: [Def] {
+        defs.enumerated().map { Def(id: "\(id)-\($0.offset)", n: $0.offset + 1, text: $0.element) }
+    }
 }
 
 struct ChainLink: Identifiable {
@@ -142,8 +154,8 @@ struct ContentView: View {
     private func entrySections(_ entry: Entry) -> some View {
         ForEach(entry.groups) { group in
             Section(group.pos) {
-                ForEach(Array(group.defs.enumerated()), id: \.offset) { i, def in
-                    Text("\(i + 1). \(def)")
+                ForEach(group.items) { def in
+                    Text("\(def.n). \(def.text)")
                 }
             }
         }
