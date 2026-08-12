@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <rect width="200" height="200" rx="40" style="fill:#0d1117"/>
+  <!-- word node -->
+  <circle cx="100" cy="52" r="10" style="fill:#58a6ff"/>
+  <!-- branches down to roots -->
+  <path d="M100 62 L100 96 M100 96 L60 130 M100 96 L140 130 M60 130 L44 160 M60 130 L78 160 M140 130 L124 160 M140 130 L156 160" style="stroke:#3fb950;stroke-width:5;fill:none;stroke-linecap:round"/>
+  <circle cx="60" cy="130" r="7" style="fill:#3fb950"/>
+  <circle cx="140" cy="130" r="7" style="fill:#3fb950"/>
+  <circle cx="44" cy="160" r="5" style="fill:#238636"/>
+  <circle cx="78" cy="160" r="5" style="fill:#238636"/>
+  <circle cx="124" cy="160" r="5" style="fill:#238636"/>
+  <circle cx="156" cy="160" r="5" style="fill:#238636"/>
+  <text x="100" y="36" style="font-family:Menlo,monospace;font-size:16px;fill:#e6edf3" text-anchor="middle">root</text>
+</svg>
