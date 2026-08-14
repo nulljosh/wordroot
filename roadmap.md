@@ -45,3 +45,6 @@ Same Aug 18 freeze applies to submitting either platform.
 - [ ] Cloudflare Pages project is still named `etyma` (Pages projects can't be renamed; would need a new project + domain move — cosmetic, low priority)
 
 > Resume note (2026-08-11): a `wip: partial work from /work notes ingest` commit holds unfinished, unverified changes for the items above. Review `git show HEAD` before building on it — it was committed mid-flight, not reviewed, and is unpushed.
+
+## From Apple Notes (imported 2026-08-13)
+- [ ] Migrate Wordroot from Vercel to Cloudflare
