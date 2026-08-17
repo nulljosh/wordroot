@@ -4,8 +4,23 @@ App Store record: **Wordroot** (app id 6794988021, bundle `com.heyitsmejosh.etym
 Repo: `nulljosh/wordroot` · folder `~/Documents/Code/wordroot` (renamed from etyma 2026-08-11)
 Web: https://wordroot.heyitsmejosh.com (Cloudflare Pages project is still named `etyma`; `etyma.heyitsmejosh.com` also still resolves)
 
-## Ship state 2026-08-11
-iOS 1.0 is **fully submission-ready** — `asc validate` returns 0 blocking errors and App Privacy is published. Done this pass:
+## Ship state 2026-08-17 (build 4 — name mismatch fixed)
+iOS 1.0 is **submission-ready and now carries the right app name**. `asc validate` returns 0 errors /
+0 warnings / 1 info (the known unverifiable App-Privacy advisory).
+
+**Caught this pass:** the attached build was build 1, uploaded 2026-07-29 — *before* the 08-11
+Etyma→Wordroot rename (`e10d481`). The target has no `CFBundleDisplayName` override and
+`PRODUCT_NAME = $(TARGET_NAME)`, so that binary installed on the home screen as **"Etyma"** while the
+App Store listing says **"Wordroot"**. Submitting it risked a name-mismatch rejection — a bad bet on an
+account already under a 5.6 Code of Conduct suspension.
+
+Fixed: bumped `CURRENT_PROJECT_VERSION` 3 → 4, regenerated with xcodegen, archived + uploaded
+**build 4** (`f10786f8-b4a5-41d1-9441-a6b4c4fcd516`, `CFBundleName = Wordroot`), verified
+`COMPLETE`/`VALID`/exempt via `asc builds uploads list`, and attached it to version 1.0.
+Version state: `PREPARE_FOR_SUBMISSION`, no pending submission.
+
+### Ship state 2026-08-11 (superseded above)
+Done that pass:
 - content rights, copyright, categories (REFERENCE / EDUCATION), age rating (all NONE + profanity INFREQUENT_OR_MILD — a dictionary surfaces vulgar entries)
 - en-US description / keywords / support + marketing URL / subtitle / privacy URL
 - review details (no demo account), build 037486c9 attached, encryption compliance = exempt
@@ -15,8 +30,8 @@ iOS 1.0 is **fully submission-ready** — `asc validate` returns 0 blocking erro
 - full Etyma → Wordroot rename (app target, sources, site, docs, repo, folder, portfolio link)
 
 ### Blocked
-- [ ] **Do not submit until 2026-08-18** — Guideline 5.6 account-level suspension freeze, see `~/Documents/Code/CLAUDE.md`. On/after Aug 18 the whole submission is one command:
-  `asc review submit --app 6794988021 --version 1.0 --platform IOS --build 037486c9-d9b0-4b4f-972f-a1eb449ce8fa --confirm`
+- [ ] **Do not submit until 2026-08-18** — Guideline 5.6 account-level suspension freeze, see `~/Documents/Code/CLAUDE.md`. On/after Aug 18 the whole submission is one command (build ID updated 08-17 to the renamed build 4 — do **not** submit the old build 1, it installs as "Etyma"):
+  `asc review submit --app 6794988021 --version 1.0 --platform IOS --build f10786f8-b4a5-41d1-9441-a6b4c4fcd516 --confirm`
 
 ### macOS 1.0 — build in progress, 1 error left
 Archive + export + upload all work (`asc builds upload --app 6794988021 --pkg ... --version 1.0 --build-number N`). Three uploads so far:
@@ -44,7 +59,10 @@ Same Aug 18 freeze applies to submitting either platform.
 - [ ] Full Wiktionary dump parse still pending (v1 uses the live REST API instead) — large scoped feature, needs its own session
 - [ ] Cloudflare Pages project is still named `etyma` (Pages projects can't be renamed; would need a new project + domain move — cosmetic, low priority)
 
-> Resume note (2026-08-11): a `wip: partial work from /work notes ingest` commit holds unfinished, unverified changes for the items above. Review `git show HEAD` before building on it — it was committed mid-flight, not reviewed, and is unpushed.
+> Resume note (2026-08-11, triaged 2026-08-17): the `wip: partial work from /work notes ingest` commit
+> (`765356f`) is **landing-page only** — `landing/index.html`, `landing/icon.svg`, `scripts/build-site.sh`,
+> `.gitignore`. It touches no iOS source, so it is not a ship risk and did not affect build 4. It is pushed
+> (`main` == `origin/main`), contrary to the old note. Still unreviewed as web work — needs its own pass.
 
 ## From Apple Notes (imported 2026-08-13)
-- [ ] Migrate Wordroot from Vercel to Cloudflare
+- [x] Migrate Wordroot from Vercel to Cloudflare — **already done** (verified 2026-08-17): no `.vercel`/`vercel.json` in the repo, and `curl -sI https://wordroot.heyitsmejosh.com` returns `server: cloudflare` + a `cf-ray` header, no Vercel headers. Only leftover is the cosmetic Pages project name (`etyma`), tracked in Backlog.
