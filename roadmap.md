@@ -30,7 +30,8 @@ Done that pass:
 - full Etyma → Wordroot rename (app target, sources, site, docs, repo, folder, portfolio link)
 
 ### Blocked
-- [ ] **Do not submit until 2026-08-18** — Guideline 5.6 account-level suspension freeze, see `~/Documents/Code/CLAUDE.md`. On/after Aug 18 the whole submission is one command (build ID updated 08-17 to the renamed build 4 — do **not** submit the old build 1, it installs as "Etyma"):
+- [x] **Submitted 2026-08-18 — iOS 1.0 is `WAITING_FOR_REVIEW`** (submission `a114741b-2723-4774-838f-26e522be1dd9`, submitted 18:36 UTC, build 4 `f10786f8-b4a5-41d1-9441-a6b4c4fcd516`). The 5.6 date freeze expired and Wordroot was never one of the four suspended apps. `asc validate` was clean (0 errors / 0 warnings / 1 known App-Privacy info). **Trap hit:** the staged one-liner `asc review submit ... --confirm` *failed* — a stray empty review submission (`a114741b`, state `READY_FOR_REVIEW`, 0 items) already existed from an earlier attempt, and `asc review submit` reused it but then failed its own final validation with "does not contain target version". The fix was `asc review submissions-submit --id a114741b-2723-4774-838f-26e522be1dd9 --confirm`, which worked. Note `asc review submissions-list` reports `Items 0` even when items exist — use `asc review items list --submission ID` instead, it showed 1. State verified by re-reading `asc status`, not by trusting the command output.
+- ~~Do not submit until 2026-08-18~~ (superseded by the line above) — Guideline 5.6 account-level suspension freeze, see `~/Documents/Code/CLAUDE.md`. On/after Aug 18 the whole submission is one command (build ID updated 08-17 to the renamed build 4 — do **not** submit the old build 1, it installs as "Etyma"):
   `asc review submit --app 6794988021 --version 1.0 --platform IOS --build f10786f8-b4a5-41d1-9441-a6b4c4fcd516 --confirm`
 
 ### macOS 1.0 — build in progress, 1 error left
