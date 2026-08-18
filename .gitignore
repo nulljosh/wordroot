@@ -10,3 +10,4 @@ xcuserdata/
 .wrangler/
 ios/.asc/artifacts/
 dist/
+ios/.asc/export-mac/

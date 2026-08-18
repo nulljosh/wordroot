@@ -29,27 +29,54 @@ Done that pass:
 - App Privacy published as DATA_NOT_COLLECTED
 - full Etyma → Wordroot rename (app target, sources, site, docs, repo, folder, portfolio link)
 
-### macOS 1.0 — build in progress, 1 error left
-Archive + export + upload all work (`asc builds upload --app 6794988021 --pkg ... --version 1.0 --build-number N`). Three uploads so far:
-- build 1 — FAILED (90242 + 90296)
-- build 2 — FAILED (90242 + 90296)
-- build 3 — FAILED (90242 only; sandbox fixed by `ios/Wordroot.entitlements`)
+### macOS 1.0 — SUBMISSION-READY (staged, not submitted) 2026-08-18
+Build 6 uploaded and `VALID` (`66ee9cf2-3e63-4637-a737-c3e1c7023c9a`), attached to version 1.0
+(`c1fced5e-...`), which remains `PREPARE_FOR_SUBMISSION`. `asc validate --platform MAC_OS` returns
+0 errors / 0 warnings / 1 info (the known unverifiable App-Privacy advisory; privacy IS published).
+Not submitted: iOS 1.0 is in review and ship-plan.md says one at a time.
 
-**Remaining: ITMS-90242.** Root cause confirmed by `codesign -dv` on the archive: the .app is signed
-`Authority=Apple Development: trommatic@icloud.com` — a *development* cert. The Mac App Store needs
-**3rd Party Mac Developer Application** (that identity IS in the keychain, along with the Installer one;
-the .pkg installer signature is already correct). Automatic signing is picking the dev cert.
+**ITMS-90242 is cleared — and the old diagnosis in this file was wrong.** The previous note blamed
+the development signing cert. It was actually the **missing `LSApplicationCategoryType`**: build 5,
+uploaded 2026-08-18 with the signing already corrected, still failed 90242 with
+*"The Info.plist must contain a LSApplicationCategoryType key"* — the identical message build 3 had
+returned. Two independent defects, only one of which was diagnosed:
 
-Fix next session: force the distribution identity, e.g. in `ios/project.yml` set
-`CODE_SIGN_IDENTITY: "3rd Party Mac Developer Application"` (with `CODE_SIGN_STYLE: Manual` + a Mac App Store
-provisioning profile), or pass `-allowProvisioningUpdates` with an explicit distribution profile at archive time.
-Then re-archive → export with `ExportOptions` containing `installerSigningCertificate` → upload as build 4.
+1. **Missing app category (the actual 90242 blocker).** Fixed with
+   `INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.reference` in `ios/project.yml`
+   (matches the REFERENCE primary category on the listing). This was the real gate all along.
+2. **Development signing cert (real, but not what 90242 was reporting).** The archive is still
+   signed `Apple Development` — that is fine and expected. The distribution identity is applied at
+   **export time only**, via `ios/.asc/MacExportOptions.plist`:
+   `signingCertificate` = `3rd Party Mac Developer Application`,
+   `installerSigningCertificate` = `3rd Party Mac Developer Installer`.
+   Verified by expanding the exported .pkg and running `codesign -dvvv` on the app inside:
+   `Authority=3rd Party Mac Developer Application: Joshua Trommel (QMM486NPYC)`.
 
-Also still needed: **Mac screenshots** (1280×800 or 2880×1800). Blocked in practice — synthetic clicks/keystrokes
-don't reach the app window, and UI-scripting is against standing preference. The default word-of-the-day ("mother")
-also renders a vulgar Wiktionary sense, so a screenshot must be of a searched word, which needs that input path.
+**Do NOT use the manual-signing route this file previously suggested.** Setting
+`CODE_SIGN_STYLE: Manual` + `PROVISIONING_PROFILE_SPECIFIER` fails at archive time with
+*"profile is Xcode managed, but signing settings require a manually managed profile"* — the only Mac
+App Store profile for `com.heyitsmejosh.etyma` is Xcode-managed. Export-side certificate pinning is
+the smaller and working fix. (`asc signing fetch --profile-type MAC_APP_STORE` cannot create a
+manual one either: it dies on a stale ASC profile reference, `no resource of type 'profiles' with
+id '9WQ42C7UYH'` — worth cleaning up in ASC someday, not blocking.)
 
-Same Aug 18 freeze applies to submitting either platform.
+**Mac screenshots are no longer blocked.** 1 shot at exactly 1280x800 uploaded and `COMPLETE`
+(`e252c417-...`), at `screenshots/appstore/mac/en-US/01-word-of-the-day.png`. Captured with **zero
+synthetic input**, so the standing no-UI-scripting preference is respected:
+- `defaults write com.heyitsmejosh.etyma "NSWindow Frame Wordroot.ContentView-1-AppWindow-1" "300 125 1280 800 0 0 1920 1050 "`
+  (the key name is discoverable by launching once and running `defaults read` — a guessed
+  `NSWindow Frame main` is ignored)
+- `killall cfprefsd`, relaunch, resolve the window id with a small CoreGraphics script, then
+  `screencapture -l<id> -o -x`. Lands at 1280x800 with no rescaling.
+
+**The "vulgar word-of-the-day" worry was overstated.** The word is deterministic —
+`wotd[Int(Date().timeIntervalSince1970/86400) % 25]` in `WordrootApp.swift:119`. Today resolved to
+**"name"**, which renders cleanly and happens to show the etymology chain (name -> nama -> *namo ->
+*namo -> *h,nomn), the app's actual differentiator. No search input was needed. If a future capture
+lands on "mother", just compute the index and shoot on a day that does not.
+
+- [ ] More Mac screenshots (only 1 uploaded; the listing is thin). Needs the search path driven, so
+      it is the one thing here still wanting a non-synthetic input route.
 
 ## Backlog
 - [ ] Full Wiktionary dump parse still pending (v1 uses the live REST API instead) — large scoped feature, needs its own session
