@@ -5,6 +5,33 @@ Repo: `nulljosh/wordroot` · folder `~/Documents/Code/wordroot` (renamed from et
 Web: https://wordroot.heyitsmejosh.com (Cloudflare Pages project is still named `etyma`; `etyma.heyitsmejosh.com` also still resolves)
 
 
+## Done 2026-08-19 — code pass (no version bump)
+
+Read the whole codebase; four real defects, all fixed and pushed (`e47ff05`), web deployed.
+
+- **XSS in `web/index.html` (the one that mattered).** `Nothing found for "${word}"` took raw
+  user input into `innerHTML`, and `strip` was a single-pass regex — so a definition containing
+  `<<img>img src=x onerror=y>` came out as a live tag. Wiktionary is publicly editable, which
+  made that stored XSS, not just self-XSS. Definitions now go through `DOMParser`
+  (inert, decodes entities too) and every interpolation is escaped.
+- **Wiktionary attribution added to the app.** CC BY-SA 4.0 requires it and App Review flags
+  uncredited third-party content. The web page always had it; the app never did.
+- **Network failure was invisible.** It rendered as "Nothing found.", and on launch — where the
+  query is empty — as a *completely blank list*. `Wiktionary.entry` now throws on transport
+  failure with its own view branch. Note for future edits: do **not** use `try?` there, it
+  flattens `Entry??` and re-merges the two cases.
+- **User-Agent set on native requests.** Wikimedia may throttle or 403 generic agents. Browsers
+  forbid setting it on `fetch`, so the web app cannot comply — commented in place.
+
+Also: extracted the parser into a pure `Wiktionary.chain(fromWikitext:)` and added the repo's
+**first test target** (`ios/Tests/`, 4 offline cases, `xcodebuild test` green on macOS; iOS and
+macOS both still build). xcodegen emits an iOS-shaped `TEST_HOST`, so the target pins
+`$(BUILT_PRODUCTS_DIR)/Wordroot.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Wordroot` to work on both.
+Deleted `web/data.json` and `web/.vercel/` (both dead), synced the three language tables.
+
+Version and build numbers untouched on purpose — iOS 1.0 is in review, macOS 1.0 staged behind it.
+These land in the next version.
+
 ## Done 2026-08-18 — freeze lifted
 - iOS 1.0 **submitted** 18:36 UTC (review submission `a114741b-2723-4774-838f-26e522be1dd9`, WAITING_FOR_REVIEW).
 - macOS 1.0 (`c1fced5e-70bc-435d-8c4f-de4de91229bb`) is `asc validate` clean — 0 errors, 0 warnings,
