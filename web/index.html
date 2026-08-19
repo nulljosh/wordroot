@@ -43,11 +43,18 @@
 const WOTD = ['water','mother','star','night','heart','fire','wind','tooth','name','wolf','snow','honey','door','ear','foot','knee','sun','moon','salt','seed','yoke','new','red','three','brother'];
 const LINK_RE = /\{\{(inh\+?|der\+?|bor\+?)\|[^|]*\|([^|}]+)\|([^|}]*)/g;
 const REL = { inh: 'inherited', der: 'derived', bor: 'borrowed' };
-const LANGS = { enm: 'Middle English', ang: 'Old English', 'gmw-pro': 'Proto-West Germanic', 'gem-pro': 'Proto-Germanic', 'ine-pro': 'Proto-Indo-European', la: 'Latin', 'la-med': 'Medieval Latin', grc: 'Ancient Greek', fro: 'Old French', fr: 'French', frm: 'Middle French', non: 'Old Norse', nl: 'Dutch', de: 'German', es: 'Spanish', it: 'Italian', 'itc-pro': 'Proto-Italic', ar: 'Arabic', sa: 'Sanskrit', enl: 'Late Middle English', 'NL.': 'New Latin', 'gkm': 'Byzantine Greek' };
+// Keep LANGS in sync with Wiktionary.langs in ios/Sources/WordrootApp.swift and pipeline/parse.py.
+const LANGS = { enm: 'Middle English', ang: 'Old English', 'gmw-pro': 'Proto-West Germanic', 'gem-pro': 'Proto-Germanic', 'ine-pro': 'Proto-Indo-European', la: 'Latin', 'la-med': 'Medieval Latin', grc: 'Ancient Greek', fro: 'Old French', fr: 'French', frm: 'Middle French', non: 'Old Norse', nl: 'Dutch', de: 'German', es: 'Spanish', it: 'Italian', 'itc-pro': 'Proto-Italic', ar: 'Arabic', sa: 'Sanskrit', 'NL.': 'New Latin', 'gkm': 'Byzantine Greek' };
 
 const $ = id => document.getElementById(id);
-const strip = s => s.replace(/<[^>]+>/g, '');
+// ponytail: DOMParser is inert (no image loads, no script), decodes entities and drops tags
+// in one pass. A regex strip is single-pass, so `<<img>img src=x onerror=y>` survives it —
+// and Wiktionary pages are publicly editable.
+const strip = s => new DOMParser().parseFromString(s, 'text/html').body.textContent;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
+// ponytail: browsers forbid setting User-Agent on fetch, so the Wikimedia UA policy
+// can only be honoured on the native side (see ios/Sources/WordrootApp.swift).
 async function definitions(word) {
   const r = await fetch(`https://en.wiktionary.org/api/rest_v1/page/definition/${encodeURIComponent(word)}`);
   if (!r.ok) return null;
@@ -78,18 +85,18 @@ async function etymology(word) {
 }
 
 function render(el, word, defs, chain) {
-  let html = `<div class="card"><h2>${word}</h2>`;
+  let html = `<div class="card"><h2>${esc(word)}</h2>`;
   if (defs && defs.length) {
     for (const g of defs) {
-      html += `<div class="pos">${g.pos}</div><ol class="defs">` +
-        g.defs.map(d => `<li>${d}</li>`).join('') + '</ol>';
+      html += `<div class="pos">${esc(g.pos)}</div><ol class="defs">` +
+        g.defs.map(d => `<li>${esc(d)}</li>`).join('') + '</ol>';
     }
   } else {
     html += '<p class="muted">No definition found.</p>';
   }
   if (chain.length) {
     html += '<div class="card" style="margin:1rem -0.25rem -0.25rem"><div class="label">Origin</div><ul class="chain">' +
-      chain.map(c => `<li><span class="rel">${c.rel} from</span> <strong>${c.ancestor}</strong> <span class="lang">${c.lang}</span></li>`).join('') +
+      chain.map(c => `<li><span class="rel">${esc(c.rel)} from</span> <strong>${esc(c.ancestor)}</strong> <span class="lang">${esc(c.lang)}</span></li>`).join('') +
       '</ul></div>';
   }
   el.innerHTML = html + '</div>';
@@ -99,7 +106,7 @@ async function lookup(word, el) {
   el.innerHTML = '<p class="muted">Looking up…</p>';
   try {
     const [defs, chain] = await Promise.all([definitions(word), etymology(word)]);
-    if (!defs && !chain.length) { el.innerHTML = `<p class="muted">Nothing found for “${word}”.</p>`; return; }
+    if (!defs && !chain.length) { el.innerHTML = `<p class="muted">Nothing found for “${esc(word)}”.</p>`; return; }
     render(el, word, defs, chain);
   } catch {
     el.innerHTML = '<p class="muted">Network error — try again.</p>';

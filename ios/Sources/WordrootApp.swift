@@ -41,15 +41,26 @@ struct Entry {
 }
 
 enum Wiktionary {
+    // Keep `langs` in sync with LANGS in web/index.html and pipeline/parse.py.
     static let langs: [String: String] = [
         "enm": "Middle English", "ang": "Old English", "gmw-pro": "Proto-West Germanic",
         "gem-pro": "Proto-Germanic", "ine-pro": "Proto-Indo-European", "la": "Latin",
-        "la-med": "Medieval Latin", "grc": "Ancient Greek", "fro": "Old French",
-        "fr": "French", "frm": "Middle French", "non": "Old Norse", "nl": "Dutch",
+        "la-med": "Medieval Latin", "NL.": "New Latin", "grc": "Ancient Greek",
+        "gkm": "Byzantine Greek", "fro": "Old French", "fr": "French",
+        "frm": "Middle French", "non": "Old Norse", "nl": "Dutch",
         "de": "German", "es": "Spanish", "it": "Italian", "itc-pro": "Proto-Italic",
         "ar": "Arabic", "sa": "Sanskrit",
     ]
+    // Only the three ancestry relations — pipeline/parse.py also collects `cog` and `root`,
+    // which are deliberately left out here: cognates are siblings, not links in a chain.
     static let rels = ["inh": "inherited", "der": "derived", "bor": "borrowed"]
+
+    // Wikimedia's UA policy allows throttling or 403ing generic agents.
+    static func request(_ url: URL) -> URLRequest {
+        var r = URLRequest(url: url)
+        r.setValue("wordroot/1.0 (trommatic@icloud.com)", forHTTPHeaderField: "User-Agent")
+        return r
+    }
 
     static func stripTags(_ s: String) -> String {
         s.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
@@ -58,7 +69,8 @@ enum Wiktionary {
     static func definitions(_ word: String) async throws -> [DefGroup] {
         let encoded = word.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? word
         guard let url = URL(string: "https://en.wiktionary.org/api/rest_v1/page/definition/\(encoded)") else { return [] }
-        let (data, resp) = try await URLSession.shared.data(from: url)
+        let (data, resp) = try await URLSession.shared.data(for: request(url))
+        // 404 just means the word has no entry — not a network failure.
         guard (resp as? HTTPURLResponse)?.statusCode == 200,
               let root = try JSONSerialization.jsonObject(with: data) as? [String: Any],
               let en = root["en"] as? [[String: Any]] else { return [] }
@@ -79,10 +91,15 @@ enum Wiktionary {
             .init(name: "action", value: "parse"), .init(name: "page", value: word),
             .init(name: "prop", value: "wikitext"), .init(name: "format", value: "json"),
         ]
-        let (data, _) = try await URLSession.shared.data(from: comps.url!)
+        let (data, _) = try await URLSession.shared.data(for: request(comps.url!))
         guard let root = try JSONSerialization.jsonObject(with: data) as? [String: Any],
               let parse = root["parse"] as? [String: Any],
               let wikitext = (parse["wikitext"] as? [String: Any])?["*"] as? String else { return [] }
+        return try chain(fromWikitext: wikitext)
+    }
+
+    /// Pure: wikitext in, ancestry chain out. Split from `etymology` so it is testable offline.
+    static func chain(fromWikitext wikitext: String) throws -> [ChainLink] {
         guard let secRange = wikitext.range(of: "===?Etymology[^=]*===?\\n", options: .regularExpression) else { return [] }
         let after = wikitext[secRange.upperBound...]
         let section = after.range(of: "\\n===?[^=]", options: .regularExpression)
@@ -101,10 +118,11 @@ enum Wiktionary {
         return chain
     }
 
-    static func entry(_ word: String) async -> Entry? {
-        async let g = try? definitions(word)
-        async let c = try? etymology(word)
-        let (groups, chain) = await (g ?? [], c ?? [])
+    /// Throws only on transport failure, so the UI can tell "offline" from "no such word".
+    static func entry(_ word: String) async throws -> Entry? {
+        async let g = definitions(word)
+        async let c = etymology(word)
+        let (groups, chain) = try await (g, c)
         if groups.isEmpty && chain.isEmpty { return nil }
         return Entry(word: word, groups: groups, chain: chain)
     }
@@ -114,6 +132,7 @@ struct ContentView: View {
     @State private var query = ""
     @State private var entry: Entry?
     @State private var loading = false
+    @State private var failed = false
     @State private var searchTask: Task<Void, Never>?
 
     static let wotd = ["water", "mother", "star", "night", "heart", "fire", "wind", "tooth", "name", "wolf",
@@ -130,6 +149,10 @@ struct ContentView: View {
                         Section {} header: { Text("Word of the day: \(entry.word)") }
                     }
                     entrySections(entry)
+                } else if failed {
+                    // Reachable on launch with an empty query, so it cannot be gated on `query`.
+                    Text("Couldn't reach Wiktionary. Check your connection.")
+                        .foregroundStyle(.secondary)
                 } else if !query.isEmpty {
                     Text("Nothing found.").foregroundStyle(.secondary)
                 }
@@ -171,6 +194,12 @@ struct ContentView: View {
                 }
             }
         }
+        // CC BY-SA 4.0 requires attribution; App Review flags uncredited third-party content.
+        Section {
+            Text("Definitions and etymologies from Wiktionary (CC BY-SA 4.0)")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
     }
 
     private func search(_ word: String) {
@@ -180,9 +209,18 @@ struct ContentView: View {
             try? await Task.sleep(for: .milliseconds(350))
             guard !Task.isCancelled else { return }
             loading = true
-            let result = await Wiktionary.entry(word)
-            guard !Task.isCancelled else { return }
-            entry = result
+            // Not `try?`: it flattens Entry?? to Entry?, which would merge a transport
+            // failure back into the "no such word" case this whole branch exists to separate.
+            do {
+                let result = try await Wiktionary.entry(word)
+                guard !Task.isCancelled else { return }
+                entry = result
+                failed = false
+            } catch {
+                guard !Task.isCancelled else { return }
+                entry = nil
+                failed = true
+            }
             loading = false
         }
     }

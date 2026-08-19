@@ -10,6 +10,9 @@ targets:
     type: application
     supportedDestinations: [iOS, macOS]
     sources: [Sources]
+    scheme:
+      testTargets:
+        - WordrootTests
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.heyitsmejosh.etyma
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
@@ -23,3 +26,14 @@ targets:
       DEVELOPMENT_TEAM: QMM486NPYC
       CODE_SIGN_STYLE: Automatic
       CODE_SIGN_ENTITLEMENTS: Wordroot.entitlements
+  WordrootTests:
+    type: bundle.unit-test
+    supportedDestinations: [iOS, macOS]
+    sources: [Tests]
+    dependencies:
+      - target: Wordroot
+    settings:
+      GENERATE_INFOPLIST_FILE: YES
+      # xcodegen emits an iOS-shaped TEST_HOST; on macOS the binary lives in Contents/MacOS.
+      # BUNDLE_EXECUTABLE_FOLDER_PATH is empty on iOS, so one value covers both destinations.
+      TEST_HOST: $(BUILT_PRODUCTS_DIR)/Wordroot.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Wordroot
