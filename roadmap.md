@@ -4,6 +4,12 @@ App Store record: **Wordroot** (app id 6794988021, bundle `com.heyitsmejosh.etym
 Repo: `nulljosh/wordroot` · folder `~/Documents/Code/wordroot` (renamed from etyma 2026-08-11)
 Web: https://wordroot.heyitsmejosh.com (Cloudflare Pages project is still named `etyma`; `etyma.heyitsmejosh.com` also still resolves)
 
+
+## Done 2026-08-18 — freeze lifted
+- iOS 1.0 **submitted** 18:36 UTC (review submission `a114741b-2723-4774-838f-26e522be1dd9`, WAITING_FOR_REVIEW).
+- macOS 1.0 (`c1fced5e-70bc-435d-8c4f-de4de91229bb`) is `asc validate` clean — 0 errors, 0 warnings,
+  0 blocking — with build `6` attached. Held for the iOS verdict, never submitted as a batch.
+
 ## Ship state 2026-08-17 (build 4 — name mismatch fixed)
 iOS 1.0 is **submission-ready and now carries the right app name**. `asc validate` returns 0 errors /
 0 warnings / 1 info (the known unverifiable App-Privacy advisory).
