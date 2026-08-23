@@ -119,3 +119,7 @@ lands on "mother", just compute the index and shoot on a day that does not.
 > (`765356f`) is **landing-page only** — `landing/index.html`, `landing/icon.svg`, `scripts/build-site.sh`,
 > `.gitignore`. It touches no iOS source, so it is not a ship risk and did not affect build 4. It is pushed
 > (`main` == `origin/main`), contrary to the old note. Still unreviewed as web work — needs its own pass.
+
+## 2026-08-23 — not live yet
+iOS 1.0 is still Waiting for Review (submitted 2026-08-18); macOS 1.0 is staged in Prepare for
+Submission. The landing page exists. No action beyond waiting on the iOS verdict, then submitting Mac.
