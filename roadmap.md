@@ -4,7 +4,6 @@ App Store record: **Wordroot** (app id 6794988021, bundle `com.heyitsmejosh.etym
 Repo: `nulljosh/wordroot` · folder `~/Documents/Code/wordroot` (renamed from etyma 2026-08-11)
 Web: https://wordroot.heyitsmejosh.com (Cloudflare Pages project is still named `etyma`; `etyma.heyitsmejosh.com` also still resolves)
 
-
 ## Done 2026-08-19 — code pass (no version bump)
 
 Read the whole codebase; four real defects, all fixed and pushed (`e47ff05`), web deployed.
