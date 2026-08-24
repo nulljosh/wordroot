@@ -62,11 +62,16 @@ Done that pass:
 - App Privacy published as DATA_NOT_COLLECTED
 - full Etyma → Wordroot rename (app target, sources, site, docs, repo, folder, portfolio link)
 
-### macOS 1.0 — SUBMISSION-READY (staged, not submitted) 2026-08-18
+### macOS 1.0 — SUBMITTED 2026-08-24 (Waiting for Review)
 Build 6 uploaded and `VALID` (`66ee9cf2-3e63-4637-a737-c3e1c7023c9a`), attached to version 1.0
-(`c1fced5e-...`), which remains `PREPARE_FOR_SUBMISSION`. `asc validate --platform MAC_OS` returns
+(`c1fced5e-...`). `asc validate --platform MAC_OS` returns
 0 errors / 0 warnings / 1 info (the known unverifiable App-Privacy advisory; privacy IS published).
-Not submitted: iOS 1.0 is in review and ship-plan.md says one at a time.
+**Submitted 2026-08-24** — review submission `8d0968b2-e4a6-4510-a0d8-e450015eed14`,
+`MAC_OS WAITING_FOR_REVIEW`. `asc review submit` failed with *"review submission ... does not
+contain target version"* — the known false negative; the submission already held 1 item in
+`READY_FOR_REVIEW` (item id decodes `<uuid>|6|888885871`, the same `|6|` type mislabel), so
+`asc review submissions-submit --id 8d0968b2-... --confirm` completed it. The Program License
+Agreement was NOT blocking. Both platforms are now Waiting for Review.
 
 **ITMS-90242 is cleared — and the old diagnosis in this file was wrong.** The previous note blamed
 the development signing cert. It was actually the **missing `LSApplicationCategoryType`**: build 5,
@@ -110,6 +115,8 @@ lands on "mother", just compute the index and shoot on a day that does not.
 
 - [ ] More Mac screenshots (only 1 uploaded; the listing is thin). Needs the search path driven, so
       it is the one thing here still wanting a non-synthetic input route.
+      **Not a submit blocker** — confirmed 2026-08-24: the single 1280x800 shot was enough,
+      macOS 1.0 submitted fine. This is a post-approval listing improvement.
 
 ## Backlog
 - [ ] Full Wiktionary dump parse still pending (v1 uses the live REST API instead) — large scoped feature, needs its own session
@@ -120,6 +127,8 @@ lands on "mother", just compute the index and shoot on a day that does not.
 > `.gitignore`. It touches no iOS source, so it is not a ship risk and did not affect build 4. It is pushed
 > (`main` == `origin/main`), contrary to the old note. Still unreviewed as web work — needs its own pass.
 
-## 2026-08-23 — not live yet
-iOS 1.0 is still Waiting for Review (submitted 2026-08-18); macOS 1.0 is staged in Prepare for
-Submission. The landing page exists. No action beyond waiting on the iOS verdict, then submitting Mac.
+## 2026-08-24 — both platforms in review, not live yet
+iOS 1.0 Waiting for Review (submitted 2026-08-18); **macOS 1.0 Waiting for Review (submitted
+2026-08-24)**. The landing page exists. No action left but waiting on both verdicts.
+
+(Supersedes the 2026-08-23 note, which said macOS was still staged.)
