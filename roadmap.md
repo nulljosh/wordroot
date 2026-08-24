@@ -131,3 +131,7 @@ iOS 1.0 Waiting for Review (submitted 2026-08-18); **macOS 1.0 Waiting for Revie
 2026-08-24)**. The landing page exists. No action left but waiting on both verdicts.
 
 (Supersedes the 2026-08-23 note, which said macOS was still staged.)
+
+## Ingested 2026-08-24
+
+- [ ] **Hero animation pass** (Notes 2026-08-24). Reference: bookrank's hero animation — copy its hero style and overall vibe. Instead of book covers, use **words**. Minor animations, not a full redesign.
