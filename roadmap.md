@@ -150,29 +150,11 @@ iOS 1.0 Waiting for Review (submitted 2026-08-18); **macOS 1.0 Waiting for Revie
 
 - [ ] **Hero animation pass** (Notes 2026-08-24). Reference: bookrank's hero animation — copy its hero style and overall vibe. Instead of book covers, use **words**. Minor animations, not a full redesign.
 
-## WebMCP + REST API rollout (pending, 2026-08-27)
+## WebMCP + REST API rollout -- shipped 2026-08-27
 
-Add `document.modelContext` tool registration so in-browser agents can drive
-this app, and document any HTTP surface it already has.
+Done. 3 read-only tools: `lookup_word`, `get_etymology`, `get_word_of_the_day`. Nothing gated -- nothing is stored or mutated.
 
-Pattern is already shipped in epiphany, healstack, roost, curvely, wiretext,
-litigate, cadence, sparkjar and lexly — copy the closest one:
-
-- React app with hooks → `src/lib/webmcp.js` exporting `useWebMCP(ctx)`, called
-  from `App.jsx` with the hook callbacks it already holds (see epiphany, curvely).
-- React app whose state lives in contexts → a `<WebMCP />` component that reads
-  those contexts (see healstack, roost).
-- Vanilla JS app → a `webmcp.js` IIFE plus `window.*` accessors exported from the
-  existing app script (see litigate, lexly, sparkjar).
-
-Rules the shipped ones follow:
-- Tools call existing functions or existing `/api` routes. Never reimplement logic.
-- Read-only tools first, then reversible writes.
-- `requiresConfirmation: true` only on the genuinely consequential ones —
-  payments, public publishing, deletions. Not on ordinary writes.
-- Bail out quietly when `document.modelContext` is missing.
-- Ship a `docs/API.md` listing REST routes (or stating there are none) plus the
-  tool table split into read-only / reversible / confirmation-gated.
+See `docs/API.md` for the full tool table, linked from the README.
 
 ## From Apple Notes (imported 2026-08-27)
 - [ ] Wordroot iOS 1.0 and macOS 1.0 both APPROVED / Ready for Distribution (id6794988021) as of Aug 24 2026.
