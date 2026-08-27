@@ -173,3 +173,6 @@ Rules the shipped ones follow:
 - Bail out quietly when `document.modelContext` is missing.
 - Ship a `docs/API.md` listing REST routes (or stating there are none) plus the
   tool table split into read-only / reversible / confirmation-gated.
+
+## From Apple Notes (imported 2026-08-27)
+- [ ] Wordroot iOS 1.0 and macOS 1.0 both APPROVED / Ready for Distribution (id6794988021) as of Aug 24 2026.

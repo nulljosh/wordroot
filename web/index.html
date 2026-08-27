@@ -129,6 +129,14 @@ $('wotd').innerHTML = '<div class="label" style="margin-top:1.5rem">Word of the 
 const wotdCard = document.createElement('div');
 $('wotd').appendChild(wotdCard);
 lookup(w, wotdCard);
+
+// Accessors for webmcp.js — kept separate so the lookup/definitions/etymology
+// functions above stay free of any agent-facing concerns.
+window.wordrootLookup = word => lookup(word, $('out'));
+window.wordrootDefinitions = definitions;
+window.wordrootEtymology = etymology;
+window.wordrootOfTheDay = () => w;
 </script>
+<script src="webmcp.js"></script>
 </body>
 </html>

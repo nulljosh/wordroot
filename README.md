@@ -31,3 +31,7 @@ MIT © 2026 Joshua Trommel
 ## Whitepaper
 
 [Technical whitepaper](WHITEPAPER.md)
+
+## API and agent tools
+Wordroot has no backend/HTTP API of its own; see [docs/API.md](docs/API.md) for the Wiktionary
+endpoints it queries directly and the read-only WebMCP tools the web app registers.
