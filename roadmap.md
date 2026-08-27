@@ -1,5 +1,9 @@
 # Wordroot Roadmap
 
+## LIVE 2026-08-27
+iOS 1.0 and macOS 1.0 are both READY_FOR_SALE on the App Store (id 6794988021).
+Next version picks up the 2026-08-19 code pass (XSS fix, attribution, network errors, tests) — needs a version bump.
+
 App Store record: **Wordroot** (app id 6794988021, bundle `com.heyitsmejosh.etyma` — Apple-locked, keeps the old name)
 Repo: `nulljosh/wordroot` · folder `~/Documents/Code/wordroot` (renamed from etyma 2026-08-11)
 Web: https://wordroot.heyitsmejosh.com (Cloudflare Pages project is still named `etyma`; `etyma.heyitsmejosh.com` also still resolves)
