@@ -150,10 +150,6 @@ iOS 1.0 Waiting for Review (submitted 2026-08-18); **macOS 1.0 Waiting for Revie
 
 - [ ] **Hero animation pass** (Notes 2026-08-24). Reference: bookrank's hero animation — copy its hero style and overall vibe. Instead of book covers, use **words**. Minor animations, not a full redesign.
 
-## From Apple Notes (imported 2026-08-25)
-
-- [ ] Wordroot needs to go live. (2026-08-25 verified: iTunes lookup returns nothing for app-id 6794988021, so neither iOS nor macOS is live yet. Both are submitted and sitting in review — nothing to build, just waiting on Apple. Re-check before doing any work here.)
-
 ## WebMCP + REST API rollout (pending, 2026-08-27)
 
 Add `document.modelContext` tool registration so in-browser agents can drive
