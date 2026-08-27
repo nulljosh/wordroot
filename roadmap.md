@@ -2,7 +2,13 @@
 
 ## Shipping 2026-08-27 — 1.0.1 (build 7)
 Carries the 2026-08-19 code pass: Wiktionary XSS fix, CC BY-SA attribution, network-error state, first test target.
-iOS IPA and macOS PKG uploaded, 1.0.1 version records created with release notes, submission pending build processing.
+Both **submitted for review 2026-08-27**, build 7 attached, `asc validate` clean on both:
+- iOS version `80723e06-c65e-4cb3-b3c6-0348694a3cba`, submission `cef226ca-9d6a-4d9b-84db-3ead8bb1b86d`
+- macOS version `f2db9266-ea8f-4b41-ad5d-97fa64520bba`, submission `b9e6fdfe-5110-4873-b464-89dac0b50c33`
+
+Note: `asc xcode export` cannot export a macOS archive (it insists on a `.ipa` path and then errors when
+xcodebuild produces a `.pkg`). Use raw `xcodebuild -exportArchive` with the plist asc leaves behind, then
+`asc builds upload --pkg` with explicit `--version` and `--build-number`.
 
 ## LIVE 2026-08-27
 iOS 1.0 and macOS 1.0 are both READY_FOR_SALE on the App Store (id 6794988021).
