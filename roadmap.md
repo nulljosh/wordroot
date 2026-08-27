@@ -1,5 +1,9 @@
 # Wordroot Roadmap
 
+## Shipping 2026-08-27 — 1.0.1 (build 7)
+Carries the 2026-08-19 code pass: Wiktionary XSS fix, CC BY-SA attribution, network-error state, first test target.
+iOS IPA and macOS PKG uploaded, 1.0.1 version records created with release notes, submission pending build processing.
+
 ## LIVE 2026-08-27
 iOS 1.0 and macOS 1.0 are both READY_FOR_SALE on the App Store (id 6794988021).
 Next version picks up the 2026-08-19 code pass (XSS fix, attribution, network errors, tests) — needs a version bump.

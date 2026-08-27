@@ -1,6 +1,6 @@
 # Wordroot Technical Whitepaper
 
-**v0.1.0** | July 2026
+**v1.0** | August 2026
 
 Wordroot is a dictionary with deep etymology. Look up any word and trace it back
 through Latin, Greek, and Proto-Indo-European with an interactive etymology
@@ -32,7 +32,7 @@ any node on the chain.
 The shipped v1 is lookup-style: live Wiktionary API lookup with the etymology
 chain rendered inline, on web and iOS. The offline SQLite dataset is the
 long-term path; live lookup keeps the app useful before the full dump is
-processed.
+processed. iOS 1.0 and macOS 1.0 both went live on the App Store 2026-08-27.
 
 ## Data Licensing
 
