@@ -16,7 +16,7 @@ Next version picks up the 2026-08-19 code pass (XSS fix, attribution, network er
 
 App Store record: **Wordroot** (app id 6794988021, bundle `com.heyitsmejosh.etyma` — Apple-locked, keeps the old name)
 Repo: `nulljosh/wordroot` · folder `~/Documents/Code/wordroot` (renamed from etyma 2026-08-11)
-Web: https://wordroot.heyitsmejosh.com (Cloudflare Pages project is still named `etyma`; `etyma.heyitsmejosh.com` also still resolves)
+Web: https://wordroot.heyitsmejosh.com (Cloudflare Pages project renamed from `etyma` to `wordroot` 2026-08-28)
 
 ## Done 2026-08-19 — code pass (no version bump)
 
@@ -131,9 +131,14 @@ lands on "mother", just compute the index and shoot on a day that does not.
       **Not a submit blocker** — confirmed 2026-08-24: the single 1280x800 shot was enough,
       macOS 1.0 submitted fine. This is a post-approval listing improvement.
 
+## Done 2026-08-28 — infrastructure finalized
+- Added official App Store badge to the landing page (hero + CTA, linking to apps.apple.com/us/app/wordroot/id6794988021)
+- Migrated Cloudflare Pages project from `etyma` to `wordroot` (new project, deployed dist/, moved domain via API, DNS repointed to wordroot-4kt.pages.dev, old etyma project deleted)
+- Landing page fully verified at wordroot.heyitsmejosh.com
+
 ## Backlog
 - [ ] Full Wiktionary dump parse still pending (v1 uses the live REST API instead) — large scoped feature, needs its own session
-- [ ] Cloudflare Pages project is still named `etyma` (Pages projects can't be renamed; would need a new project + domain move — cosmetic, low priority)
+- [ ] Hero animation pass (words instead of book covers, minor animations matching bookrank style)
 
 > Resume note (2026-08-11, triaged 2026-08-17): the `wip: partial work from /work notes ingest` commit
 > (`765356f`) is **landing-page only** — `landing/index.html`, `landing/icon.svg`, `scripts/build-site.sh`,
