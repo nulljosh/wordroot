@@ -10,6 +10,23 @@
 <meta property="og:description" content="Trace any word back through Latin, Greek, and Proto-Indo-European with an interactive etymology tree and cognate links.">
 <meta property="og:type" content="website">
 <link rel="icon" href="icon.svg">
+<!-- hreflang:begin — verified against i18n/strings.json by scripts/gen-i18n.py --check -->
+<link rel="alternate" hreflang="x-default" href="https://wordroot.app/">
+<link rel="alternate" hreflang="en" href="https://wordroot.app/?lang=en">
+<link rel="alternate" hreflang="es" href="https://wordroot.app/?lang=es">
+<link rel="alternate" hreflang="fr" href="https://wordroot.app/?lang=fr">
+<link rel="alternate" hreflang="de" href="https://wordroot.app/?lang=de">
+<link rel="alternate" hreflang="pt" href="https://wordroot.app/?lang=pt">
+<link rel="alternate" hreflang="it" href="https://wordroot.app/?lang=it">
+<link rel="alternate" hreflang="nl" href="https://wordroot.app/?lang=nl">
+<link rel="alternate" hreflang="ru" href="https://wordroot.app/?lang=ru">
+<link rel="alternate" hreflang="ja" href="https://wordroot.app/?lang=ja">
+<link rel="alternate" hreflang="zh-Hans" href="https://wordroot.app/?lang=zh-Hans">
+<link rel="alternate" hreflang="ko" href="https://wordroot.app/?lang=ko">
+<link rel="alternate" hreflang="ar" href="https://wordroot.app/?lang=ar">
+<!-- hreflang:end -->
+<script src="i18n.js"></script>
+<script>window.i18n.applyDocumentLanguage();</script>
 <style>
 @import url("https://heyitsmejosh.com/tokens.css");
 
@@ -154,6 +171,12 @@ section { padding: 4rem 0; }
 
 footer { padding: 2.5rem 0 3.5rem; text-align: center; font-size: 0.9rem; color: var(--text2); }
 footer p + p { margin-top: 0.35rem; }
+footer select {
+  font: inherit; font-size: 0.9rem; margin-top: 1rem;
+  padding: 0.35rem 1.7rem 0.35rem 0.6rem;
+  border: 1px solid var(--border); border-radius: 8px;
+  background: var(--bg); color: var(--text);
+}
 </style>
 </head>
 <body>
@@ -163,41 +186,41 @@ footer p + p { margin-top: 0.35rem; }
   <div class="container">
     <img class="hero-icon" src="icon.svg" alt="Wordroot icon" width="88" height="88">
     <h1>Wordroot</h1>
-    <p>A clean dictionary that shows you where words actually come from — traced back through Latin, Greek, and Proto-Indo-European.</p>
+    <p data-i18n="landing.hero.sub">A clean dictionary that shows you where words actually come from — traced back through Latin, Greek, and Proto-Indo-European.</p>
     <div class="buttons">
-      <a href="/app" class="btn btn-primary">Open Wordroot</a>
-      <a href="https://github.com/nulljosh/wordroot" class="btn btn-outline">Source</a>
+      <a href="/app" class="btn btn-primary" data-i18n="landing.cta.open">Open Wordroot</a>
+      <a href="https://github.com/nulljosh/wordroot" class="btn btn-outline" data-i18n="landing.cta.source">Source</a>
     </div>
   </div>
 </section>
 
 <section class="features">
   <div class="container">
-    <h2>Every word has a history. Wordroot shows it.</h2>
+    <h2 data-i18n="landing.features.title">Every word has a history. Wordroot shows it.</h2>
     <div class="grid">
       <div class="feature">
-        <h3>Interactive etymology tree</h3>
-        <p>Follow a word backwards through each ancestor language, one branch at a time.</p>
+        <h3 data-i18n="landing.f1.title">Interactive etymology tree</h3>
+        <p data-i18n="landing.f1.body">Follow a word backwards through each ancestor language, one branch at a time.</p>
       </div>
       <div class="feature">
-        <h3>Real cognate links</h3>
-        <p>See the related words in other languages that share the same root.</p>
+        <h3 data-i18n="landing.f2.title">Real cognate links</h3>
+        <p data-i18n="landing.f2.body">See the related words in other languages that share the same root.</p>
       </div>
       <div class="feature">
-        <h3>Live Wiktionary data</h3>
-        <p>Definitions and etymologies come from Wiktionary, parsed into a proper graph.</p>
+        <h3 data-i18n="landing.f3.title">Live Wiktionary data</h3>
+        <p data-i18n="landing.f3.body">Definitions and etymologies come from Wiktionary, parsed into a proper graph.</p>
       </div>
       <div class="feature">
-        <h3>No ads, ever</h3>
-        <p>The big dictionary apps are covered in ads and have no etymology. This has neither problem.</p>
+        <h3 data-i18n="landing.f4.title">No ads, ever</h3>
+        <p data-i18n="landing.f4.body">The big dictionary apps are covered in ads and have no etymology. This has neither problem.</p>
       </div>
       <div class="feature">
-        <h3>Clean dictionary UX</h3>
-        <p>Fast lookup first. The deep history is one tap away, never in the way.</p>
+        <h3 data-i18n="landing.f5.title">Clean dictionary UX</h3>
+        <p data-i18n="landing.f5.body">Fast lookup first. The deep history is one tap away, never in the way.</p>
       </div>
       <div class="feature">
-        <h3>iOS, Mac, and web</h3>
-        <p>One dataset, three places to read it. Nothing to sign up for.</p>
+        <h3 data-i18n="landing.f6.title">iOS, Mac, and web</h3>
+        <p data-i18n="landing.f6.body">One dataset, three places to read it. Nothing to sign up for.</p>
       </div>
     </div>
   </div>
@@ -205,50 +228,48 @@ footer p + p { margin-top: 0.35rem; }
 
 <section class="closing">
   <div class="container">
-    <h2>Start with a word</h2>
-    <p>No account, no install required. Open the web app and look something up.</p>
+    <h2 data-i18n="landing.closing.title">Start with a word</h2>
+    <p data-i18n="landing.closing.body">No account, no install required. Open the web app and look something up.</p>
     <div class="buttons">
-      <a href="/app" class="btn btn-primary">Open Wordroot</a>
+      <a href="/app" class="btn btn-primary" data-i18n="landing.cta.open">Open Wordroot</a>
     </div>
   </div>
 </section>
 
 <footer>
   <div class="container">
-    <p>Wordroot &mdash; by <a href="https://heyitsmejosh.com">Joshua Trommel</a></p>
-    <p><a href="https://github.com/nulljosh/wordroot">Source on GitHub</a></p>
-    <p><a href="https://github.com/nulljosh/wordroot/blob/main/docs/API.md" target="_blank" rel="noopener">API</a></p>
+    <p><span data-i18n="landing.footer.by">Wordroot &mdash; by</span> <a href="https://heyitsmejosh.com">Joshua Trommel</a></p>
+    <p><a href="https://github.com/nulljosh/wordroot" data-i18n="landing.footer.source">Source on GitHub</a></p>
+    <p><a href="https://github.com/nulljosh/wordroot/blob/main/docs/API.md" target="_blank" rel="noopener" data-i18n="landing.footer.api">API</a></p>
+    <p id="langPicker"></p>
   </div>
 </footer>
 
 <script>
-// Wall of words and the roots they descend from. Static list -- no fetch, so it
-// cannot fail; if the element is ever missing the plain hero still renders.
+// Apply the negotiated locale. The English copy stays in the markup as the source of truth
+// and as what a crawler or a JS-less reader sees; this swaps it in place.
 (function () {
-  var ROOTS = [
-    ['candid', 'candidus \u2014 white'], ['sincere', 'sine cera \u2014 without wax'],
-    ['muscle', 'musculus \u2014 little mouse'], ['salary', 'salarium \u2014 salt money'],
-    ['disaster', 'dis-astro \u2014 ill-starred'], ['companion', 'com panis \u2014 with bread'],
-    ['clue', 'clew \u2014 ball of thread'], ['sarcasm', 'sarkazein \u2014 to tear flesh'],
-    ['nostalgia', 'nostos algos \u2014 homecoming pain'], ['quarantine', 'quaranta \u2014 forty days'],
-    ['galaxy', 'gala \u2014 milk'], ['orient', 'oriens \u2014 rising sun'],
-    ['tragedy', 'tragoidia \u2014 goat song'], ['calculate', 'calculus \u2014 pebble'],
-    ['lunatic', 'luna \u2014 moon'], ['pupil', 'pupilla \u2014 little doll'],
-    ['rival', 'rivalis \u2014 same stream'], ['precocious', 'praecox \u2014 ripening early'],
-    ['sabotage', 'sabot \u2014 wooden shoe'], ['vaccine', 'vacca \u2014 cow'],
-    ['alcohol', 'al-kuhl \u2014 the kohl'], ['algebra', 'al-jabr \u2014 reunion of parts'],
-    ['assassin', 'hashishin \u2014 hashish user'], ['candidate', 'candidatus \u2014 robed in white'],
-    ['dexterity', 'dexter \u2014 right-handed'], ['sinister', 'sinister \u2014 left-handed'],
-    ['husband', 'hus bondi \u2014 house dweller'], ['window', 'vindauga \u2014 wind eye'],
-    ['daisy', 'daeges eage \u2014 day\u2019s eye'], ['gossip', 'godsibb \u2014 godparent'],
-    ['nice', 'nescius \u2014 ignorant'], ['silly', 'saelig \u2014 blessed'],
-    ['panic', 'Pan \u2014 the god'], ['cereal', 'Ceres \u2014 goddess of grain'],
-    ['january', 'Janus \u2014 two-faced god'], ['volcano', 'Vulcan \u2014 god of fire'],
-    ['atlas', 'Atlas \u2014 the titan'], ['echo', 'Echo \u2014 the nymph'],
-    ['robot', 'robota \u2014 forced labour'], ['nightmare', 'mare \u2014 crushing spirit']
-  ];
+  document.querySelectorAll('[data-i18n]').forEach(function (el) {
+    el.textContent = i18n.t(el.getAttribute('data-i18n'));
+  });
+  document.title = i18n.t('landing.title');
+  var description = i18n.t('landing.description');
+  [['meta[name="description"]', description],
+   ['meta[property="og:title"]', i18n.t('landing.title')],
+   ['meta[property="og:description"]', description]].forEach(function (pair) {
+    var el = document.querySelector(pair[0]);
+    if (el) el.setAttribute('content', pair[1]);
+  });
+  var slot = document.getElementById('langPicker');
+  if (slot) slot.appendChild(i18n.localePicker(i18n.t('ui.interfaceLanguage')));
+})();
+
+// Wall of words and the roots they descend from. Static data from i18n.js -- no fetch, so
+// it cannot fail; if the element is ever missing the plain hero still renders.
+(function () {
+  var ROOTS = i18n.wall.slice();
   var wall = document.getElementById('heroWall');
-  if (!wall) return;
+  if (!wall || !ROOTS.length) return;
   for (var i = ROOTS.length - 1; i > 0; i--) {  // shuffle so the wall differs each visit
     var j = Math.floor(Math.random() * (i + 1));
     var t = ROOTS[i]; ROOTS[i] = ROOTS[j]; ROOTS[j] = t;
@@ -261,11 +282,19 @@ footer p + p { margin-top: 0.35rem; }
     col.style.setProperty('--dur', (70 + c * 11) + 's');
     var slice = ROOTS.slice(c * per, (c + 1) * per);
     if (!slice.length) slice = ROOTS.slice(0, per);
-    slice.concat(slice).forEach(function (pair) {  // doubled, so the loop is seamless
+    slice.concat(slice).forEach(function (entry) {  // doubled, so the loop is seamless
       var card = document.createElement('div');
       card.className = 'wall-card';
-      var b = document.createElement('b'); b.textContent = pair[0];
-      var sp = document.createElement('span'); sp.textContent = pair[1];
+      // The headword is English and its source form Latin, Greek or Old English whatever the
+      // reader's language; only the meaning is translated, so only the meaning follows the
+      // page's direction.
+      var b = document.createElement('b');
+      b.textContent = entry.word;
+      b.lang = 'en';
+      b.dir = 'ltr';
+      var sp = document.createElement('span');
+      sp.textContent = entry.form + ' \u2014 ' + entry.meaning;
+      sp.dir = 'auto';
       card.appendChild(b); card.appendChild(sp);
       col.appendChild(card);
     });

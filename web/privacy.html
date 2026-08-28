@@ -4,38 +4,76 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Privacy — Wordroot</title>
+<script src="i18n.js"></script>
+<script>window.i18n.applyDocumentLanguage();</script>
 <style>
-  :root { --bg:#fff; --text:#252a49; --text2:#666; --accent:#5B9BD5; }
-  @media (prefers-color-scheme: dark) { :root { --bg:#111; --text:#e8e8f0; --text2:rgba(232,232,240,.6); } }
+  :root { --bg:#fff; --text:#252a49; --text2:#666; --accent:#5B9BD5; --border:#e8e8e8; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#111; --text:#e8e8f0; --text2:rgba(232,232,240,.6); --border:rgba(232,232,240,.1); } }
   body { font-family:-apple-system, system-ui, sans-serif; background:var(--bg); color:var(--text); max-width:640px; margin:0 auto; padding:6vh 1rem 4rem; line-height:1.55; }
   h1 { font-size:1.4rem; letter-spacing:-.02em; }
   h2 { font-size:1rem; margin-top:2rem; }
   a { color:var(--accent); }
   .muted { color:var(--text2); font-size:.85rem; }
+  .topbar { display:flex; align-items:baseline; justify-content:space-between; gap:.75rem; flex-wrap:wrap; }
+  .topbar select {
+    font:inherit; font-size:.8rem; padding:.3rem 1.6rem .3rem .5rem;
+    border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text);
+  }
 </style>
 </head>
 <body>
-<h1>Privacy Policy</h1>
-<p class="muted">Wordroot · Last updated 11 August 2026</p>
+<div class="topbar"><h1 id="heading"></h1><span id="picker"></span></div>
+<p class="muted" id="updated"></p>
+<main id="body"></main>
+<p class="muted" style="margin-top:2rem"><a href="/" id="back"></a></p>
+<script>
+const t = (k, v) => i18n.t(k, v);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-<h2>What we collect</h2>
-<p>Nothing. The app and website have no accounts, no sign-in, no analytics, and no advertising. We do not collect, store, or transmit any personal information, and nothing you type is sent to us.</p>
+// The policy is only accurate if it names what the page actually stores, so this date moves
+// whenever a section below changes — not whenever a translation is tweaked.
+const LAST_UPDATED = '2026-08-28';
 
-<h2>Word lookups</h2>
-<p>When you look up a word, the app requests that word's page directly from the public <a href="https://en.wiktionary.org">Wiktionary</a> API operated by the Wikimedia Foundation. That request is not routed through any server we control. Wikimedia's handling of such requests is covered by their <a href="https://foundation.wikimedia.org/wiki/Policy:Privacy_policy">privacy policy</a>.</p>
+/**
+ * Translate a string whose placeholders stand for links. The template is escaped first and
+ * the placeholders substituted after, so a translation can never inject markup.
+ */
+function withLinks(key, links) {
+  let html = esc(t(key));
+  for (const [name, { href, text }] of Object.entries(links)) {
+    html = html.replace('{' + name + '}', `<a href="${esc(href)}">${esc(text)}</a>`);
+  }
+  return html;
+}
 
-<h2>Data stored on your device</h2>
-<p>Only your search text while the app is open. It is not persisted after you close the app.</p>
+document.title = t('privacy.title');
+document.getElementById('heading').textContent = t('privacy.heading');
+document.getElementById('picker').appendChild(i18n.localePicker(t('ui.interfaceLanguage')));
 
-<h2>Children</h2>
-<p>The app is safe for all ages and collects no data from anyone, including children under 13.</p>
+const date = new Intl.DateTimeFormat(i18n.locale, { dateStyle: 'long' })
+  .format(new Date(LAST_UPDATED + 'T00:00:00Z'));
+document.getElementById('updated').textContent = 'Wordroot · ' + t('privacy.lastUpdated', { date });
 
-<h2>Changes</h2>
-<p>If this policy changes, the updated version will be posted at this URL.</p>
+const sections = [
+  ['privacy.collect.h', esc(t('privacy.collect.p'))],
+  ['privacy.lookups.h', withLinks('privacy.lookups.p', {
+    wiktionary: { href: 'https://en.wiktionary.org', text: t('ui.wiktionary') },
+    policy: {
+      href: 'https://foundation.wikimedia.org/wiki/Policy:Privacy_policy',
+      text: t('privacy.policyLink'),
+    },
+  })],
+  ['privacy.device.h', esc(t('privacy.device.p'))],
+  ['privacy.children.h', esc(t('privacy.children.p'))],
+  ['privacy.changes.h', esc(t('privacy.changes.p'))],
+  ['privacy.contact.h', '<a href="mailto:trommatic@icloud.com">trommatic@icloud.com</a>'],
+];
+document.getElementById('body').innerHTML =
+  sections.map(([h, p]) => `<h2>${esc(t(h))}</h2><p>${p}</p>`).join('');
 
-<h2>Contact</h2>
-<p><a href="mailto:trommatic@icloud.com">trommatic@icloud.com</a></p>
-
-<p class="muted" style="margin-top:2rem"><a href="/">← Back to Wordroot</a></p>
+// The arrow points back towards the start edge, which is the right one in Arabic.
+document.getElementById('back').textContent =
+  (i18n.dir === 'rtl' ? '→ ' : '← ') + t('privacy.back');
+</script>
 </body>
 </html>

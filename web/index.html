@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wordroot — dictionary + etymology</title>
+<script src="i18n.js"></script>
+<script>window.i18n.applyDocumentLanguage();</script>
 <style>
   :root {
     --bg: #ffffff; --bg2: #f5f5f5; --text: #252a49; --text2: #666;
@@ -14,37 +16,56 @@
   }
   * { box-sizing: border-box; }
   body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); max-width: 640px; margin: 0 auto; padding: 6vh 1rem 4rem; }
-  h1 { font-size: 1.4rem; letter-spacing: -.02em; }
+  h1 { font-size: 1.4rem; letter-spacing: -.02em; margin: 0; }
   input { width: 100%; font-size: 1.25rem; padding: .75rem 1rem; border: 1px solid var(--border); border-radius: 10px; background: var(--bg2); color: var(--text); outline: none; }
   input:focus { border-color: var(--accent); }
   .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; margin-top: 1.5rem; }
   .card h2 { margin: 0 0 .25rem; font-size: 1.2rem; }
   .label { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--text2); margin-bottom: .5rem; }
   .pos { color: var(--accent); font-size: .85rem; font-weight: 600; margin-top: .75rem; }
-  ol.defs { margin: .25rem 0 0; padding-left: 1.25rem; }
+  /* padding-inline, not padding-left: the numbers must sit on the start edge in Arabic too */
+  ol.defs { margin: .25rem 0 0; padding-inline-start: 1.25rem; }
   ol.defs li { margin: .3rem 0; line-height: 1.45; }
   .chain { list-style: none; padding: 0; margin: .25rem 0 0; }
   .chain li { padding: .45rem 0; border-bottom: 1px solid var(--border); }
   .chain li:last-child { border-bottom: none; }
-  .chain .rel { color: var(--text2); font-size: .85rem; }
-  .chain .lang { color: var(--accent); font-size: .85rem; }
+  /* Ancestor first, relation and language as a caption beneath. A single run-on line
+     ("inherited from X Latin") cannot be translated without reordering, and word order
+     differs in every one of the twelve locales; two lines read correctly in all of them. */
+  .chain .anc { font-weight: 600; }
+  .chain .meta { font-size: .85rem; color: var(--text2); }
+  .chain .meta .lang { color: var(--accent); }
   .muted { color: var(--text2); }
   .attr { font-size: .75rem; color: var(--text2); margin-top: 2rem; }
   .attr a { color: var(--accent); }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  select {
+    font: inherit; font-size: .8rem; padding: .3rem 1.6rem .3rem .5rem; max-width: 11rem;
+    border: 1px solid var(--border); border-radius: 8px; background: var(--bg2); color: var(--text);
+  }
+  /* The word-language picker scopes the search, so it sits with the field rather than beside
+     the interface picker — where, in Arabic, the two read as the same word twice over. */
+  .search { display: flex; gap: .5rem; align-items: stretch; }
+  .search select { font-size: .95rem; flex: 0 0 auto; }
 </style>
 </head>
 <body>
-<h1>Wordroot</h1>
-<input type="search" id="q" placeholder="Look up a word" autofocus autocapitalize="none">
+<div class="topbar">
+  <h1>Wordroot</h1>
+  <span id="uiPicker"></span>
+</div>
+<div class="search">
+  <span id="wordPicker"></span>
+  <input type="search" id="q" autofocus autocapitalize="none">
+</div>
 <div id="wotd"></div>
 <div id="out"></div>
-<p class="attr">Also on iPhone and Mac as <strong>Wordroot</strong>. Definitions and etymologies from <a href="https://en.wiktionary.org">Wiktionary</a> (CC BY-SA 4.0). <a href="/privacy.html">Privacy</a></p>
+<p class="attr" id="attr"></p>
 <script>
-const WOTD = ['water','mother','star','night','heart','fire','wind','tooth','name','wolf','snow','honey','door','ear','foot','knee','sun','moon','salt','seed','yoke','new','red','three','brother'];
+const t = (k, v) => i18n.t(k, v);
 const LINK_RE = /\{\{(inh\+?|der\+?|bor\+?)\|[^|]*\|([^|}]+)\|([^|}]*)/g;
-const REL = { inh: 'inherited', der: 'derived', bor: 'borrowed' };
-// Keep LANGS in sync with Wiktionary.langs in ios/Sources/WordrootApp.swift and pipeline/parse.py.
-const LANGS = { enm: 'Middle English', ang: 'Old English', 'gmw-pro': 'Proto-West Germanic', 'gem-pro': 'Proto-Germanic', 'ine-pro': 'Proto-Indo-European', la: 'Latin', 'la-med': 'Medieval Latin', grc: 'Ancient Greek', fro: 'Old French', fr: 'French', frm: 'Middle French', non: 'Old Norse', nl: 'Dutch', de: 'German', es: 'Spanish', it: 'Italian', 'itc-pro': 'Proto-Italic', ar: 'Arabic', sa: 'Sanskrit', 'NL.': 'New Latin', 'gkm': 'Byzantine Greek' };
+const REL = { inh: 'rel.inherited', der: 'rel.derived', bor: 'rel.borrowed' };
+const WORD_LANG_KEY = 'wordroot.wordLang';
 
 const $ = id => document.getElementById(id);
 // ponytail: DOMParser is inert (no image loads, no script), decodes entities and drops tags
@@ -52,90 +73,196 @@ const $ = id => document.getElementById(id);
 // and Wiktionary pages are publicly editable.
 const strip = s => new DOMParser().parseFromString(s, 'text/html').body.textContent;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// Every lookup runs against the English Wiktionary whatever the interface language is: it
+// carries entries for thousands of languages under one consistent set of etymology templates
+// ({{inh}}, {{der}}, {{bor}}), whereas fr./de./es. Wiktionary each use their own incompatible
+// markup. The word language below selects which ==Language== section of that page to read.
+const WIKI = 'https://en.wiktionary.org';
+
+function storedWordLang() {
+  try { return localStorage.getItem(WORD_LANG_KEY); } catch (e) { return null; }
+}
+
+/** Default the word language to the interface language when we have a dictionary for it. */
+function defaultWordLang() {
+  const ui = i18n.locale.split('-')[0];  // zh-Hans -> zh
+  return i18n.wordLanguages.some(l => l.code === ui) ? ui : 'en';
+}
+
+let wordLang = i18n.wordLanguages.some(l => l.code === storedWordLang())
+  ? storedWordLang() : defaultWordLang();
+
+const wordLangMeta = () => i18n.wordLanguages.filter(l => l.code === wordLang)[0];
 
 // ponytail: browsers forbid setting User-Agent on fetch, so the Wikimedia UA policy
 // can only be honoured on the native side (see ios/Sources/WordrootApp.swift).
-async function definitions(word) {
-  const r = await fetch(`https://en.wiktionary.org/api/rest_v1/page/definition/${encodeURIComponent(word)}`);
+async function definitions(word, lang) {
+  const r = await fetch(`${WIKI}/api/rest_v1/page/definition/${encodeURIComponent(word)}`);
   if (!r.ok) return null;
   const d = await r.json();
-  return (d.en || []).map(e => ({
+  // Keyed by the language of each ==section== on the page, so "chat" carries both an `en`
+  // and an `fr` entry. Taking only the requested one is what makes the picker mean anything;
+  // a page with no section in that language is a miss, not a fallback to English.
+  const entries = d[lang || wordLang];
+  if (!entries) return null;
+  return entries.map(e => ({
     pos: e.partOfSpeech,
     defs: e.definitions.map(x => strip(x.definition)).filter(Boolean).slice(0, 4),
   }));
 }
 
-async function etymology(word) {
-  const api = `https://en.wiktionary.org/w/api.php?action=parse&page=${encodeURIComponent(word)}&prop=wikitext&format=json&origin=*`;
+/** Body of the `==Name==` language section, or null. Stops at the next level-2 heading. */
+function languageSection(text, name) {
+  const m = new RegExp('^==\\s*' + escRe(name) + '\\s*==\\s*$', 'm').exec(text);
+  if (!m) return null;
+  const after = text.slice(m.index + m[0].length);
+  const end = after.search(/^==[^=]/m);
+  return end === -1 ? after : after.slice(0, end);
+}
+
+async function etymology(word, lang) {
+  const meta = i18n.wordLanguages.filter(l => l.code === (lang || wordLang))[0];
+  if (!meta) return [];
+  const api = `${WIKI}/w/api.php?action=parse&page=${encodeURIComponent(word)}&prop=wikitext&format=json&origin=*`;
   const r = await fetch(api);
   if (!r.ok) return [];
   const d = await r.json();
-  const text = d.parse?.wikitext?.['*'] || '';
-  const m = text.match(/===?Etymology[^=]*===?\n([\s\S]*?)(\n===?[^=]|$)/);
+  const section = languageSection(d.parse?.wikitext?.['*'] || '', meta.section);
+  if (!section) return [];
+  const m = section.match(/===?Etymology[^=]*===?\n([\s\S]*?)(\n===?[^=]|$)/);
   if (!m) return [];
   const chain = [];
-  for (const t of m[1].matchAll(LINK_RE)) {
-    const rel = REL[t[1].replace('+', '')];
-    const lang = LANGS[t[2]] || t[2];
-    const ancestor = t[3];
-    if (rel && ancestor) chain.push({ rel, lang, ancestor });
+  for (const x of m[1].matchAll(LINK_RE)) {
+    const rel = REL[x[1].replace('+', '')];
+    const ancestor = x[3];
+    if (rel && ancestor) chain.push({ rel: t(rel), langCode: x[2], lang: i18n.languageName(x[2]), ancestor });
     if (chain.length >= 10) break;
   }
   return chain;
 }
 
 function render(el, word, defs, chain) {
-  let html = `<div class="card"><h2>${esc(word)}</h2>`;
+  // dir="auto" throughout: the headword and its ancestors can be in any script — an Arabic
+  // ancestor inside an English page, or a Latin one inside an Arabic page — and each element
+  // has to pick up its own direction independently of the page's.
+  let html = `<div class="card"><h2 dir="auto" lang="${esc(wordLang)}">${esc(word)}</h2>`;
   if (defs && defs.length) {
     for (const g of defs) {
-      html += `<div class="pos">${esc(g.pos)}</div><ol class="defs">` +
+      // Glosses on the English Wiktionary are written in English whatever the entry's language.
+      html += `<div class="pos">${esc(g.pos)}</div><ol class="defs" lang="en" dir="auto">` +
         g.defs.map(d => `<li>${esc(d)}</li>`).join('') + '</ol>';
     }
   } else {
-    html += '<p class="muted">No definition found.</p>';
+    html += `<p class="muted">${esc(t('ui.noDefinition'))}</p>`;
   }
   if (chain.length) {
-    html += '<div class="card" style="margin:1rem -0.25rem -0.25rem"><div class="label">Origin</div><ul class="chain">' +
-      chain.map(c => `<li><span class="rel">${esc(c.rel)} from</span> <strong>${esc(c.ancestor)}</strong> <span class="lang">${esc(c.lang)}</span></li>`).join('') +
+    html += `<div class="card" style="margin:1rem -0.25rem -0.25rem"><div class="label">${esc(t('ui.origin'))}</div><ul class="chain">` +
+      chain.map(c =>
+        `<li><div class="anc" dir="auto" lang="${esc(c.langCode)}">${esc(c.ancestor)}</div>` +
+        `<div class="meta">${esc(c.rel)} · <span class="lang">${esc(c.lang)}</span></div></li>`).join('') +
       '</ul></div>';
   }
   el.innerHTML = html + '</div>';
 }
 
 async function lookup(word, el) {
-  el.innerHTML = '<p class="muted">Looking up…</p>';
+  el.innerHTML = `<p class="muted">${esc(t('ui.lookingUp'))}</p>`;
+  const lang = wordLang;
   try {
-    const [defs, chain] = await Promise.all([definitions(word), etymology(word)]);
-    if (!defs && !chain.length) { el.innerHTML = `<p class="muted">Nothing found for “${esc(word)}”.</p>`; return; }
+    const [defs, chain] = await Promise.all([definitions(word, lang), etymology(word, lang)]);
+    if (lang !== wordLang) return;  // the picker moved while we were in flight
+    if (!defs && !chain.length) {
+      el.innerHTML = `<p class="muted">${esc(t('ui.nothingFoundFor', { word }))}</p>`;
+      return;
+    }
     render(el, word, defs, chain);
   } catch {
-    el.innerHTML = '<p class="muted">Network error — try again.</p>';
+    el.innerHTML = `<p class="muted">${esc(t('ui.networkError'))}</p>`;
   }
 }
 
-let t = null;
+/** Today's word in the current word language, or null if we ship no list for it. */
+function wordOfTheDay() {
+  const list = i18n.wordsOfTheDay[wordLang];
+  if (!list || !list.length) return null;
+  return list[Math.floor(Date.now() / 864e5) % list.length];  // stable per calendar day
+}
+
+function renderWordOfTheDay() {
+  const w = wordOfTheDay();
+  $('wotd').innerHTML = '';
+  if (!w) return;
+  const label = document.createElement('div');
+  label.className = 'label';
+  label.style.marginTop = '1.5rem';
+  label.textContent = t('ui.wotd');
+  const card = document.createElement('div');
+  $('wotd').append(label, card);
+  lookup(w, card);
+}
+
+function wordLangPicker() {
+  const sel = document.createElement('select');
+  sel.setAttribute('aria-label', t('ui.wordLanguage'));
+  sel.title = t('ui.wordLanguage');
+  const collator = new Intl.Collator(i18n.locale);
+  i18n.wordLanguages
+    .map(l => ({ code: l.code, name: i18n.languageName(l.code) }))
+    .sort((a, b) => collator.compare(a.name, b.name))
+    .forEach(l => {
+      const opt = document.createElement('option');
+      opt.value = l.code;
+      opt.textContent = l.name;
+      if (l.code === wordLang) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  sel.addEventListener('change', () => {
+    wordLang = sel.value;
+    try { localStorage.setItem(WORD_LANG_KEY, wordLang); } catch (e) { /* storage disabled */ }
+    // A word only exists in one language, so the current query is almost certainly stale.
+    $('q').value = '';
+    $('out').innerHTML = '';
+    renderWordOfTheDay();
+  });
+  return sel;
+}
+
+function renderChrome() {
+  document.title = t('web.title');
+  $('q').placeholder = t('ui.searchPlaceholder');
+  $('q').setAttribute('aria-label', t('ui.searchPlaceholder'));
+  const uiPicker = i18n.localePicker(t('ui.interfaceLanguage'));
+  uiPicker.title = t('ui.interfaceLanguage');
+  $('uiPicker').appendChild(uiPicker);
+  $('wordPicker').appendChild(wordLangPicker());
+  $('attr').innerHTML =
+    `${esc(t('ui.alsoOnApple'))} ` +
+    `<a href="https://en.wiktionary.org">${esc(t('ui.attribution'))}</a> ` +
+    `<a href="/privacy.html">${esc(t('ui.privacy'))}</a>`;
+}
+
+let debounce = null;
 $('q').addEventListener('input', e => {
   const word = e.target.value.trim().toLowerCase();
-  clearTimeout(t);
+  clearTimeout(debounce);
   if (!word) { $('out').innerHTML = ''; $('wotd').style.display = 'block'; return; }
   $('wotd').style.display = 'none';
-  t = setTimeout(() => lookup(word, $('out')), 350);
+  debounce = setTimeout(() => lookup(word, $('out')), 350);
 });
 
-// word of the day: stable per calendar day
-const day = Math.floor(Date.now() / 864e5);
-const w = WOTD[day % WOTD.length];
-$('wotd').innerHTML = '<div class="label" style="margin-top:1.5rem">Word of the day</div>';
-const wotdCard = document.createElement('div');
-$('wotd').appendChild(wotdCard);
-lookup(w, wotdCard);
+renderChrome();
+renderWordOfTheDay();
 
 // Accessors for webmcp.js — kept separate so the lookup/definitions/etymology
 // functions above stay free of any agent-facing concerns.
 window.wordrootLookup = word => lookup(word, $('out'));
 window.wordrootDefinitions = definitions;
 window.wordrootEtymology = etymology;
-window.wordrootOfTheDay = () => w;
+window.wordrootOfTheDay = wordOfTheDay;
+window.wordrootWordLanguage = () => wordLang;
+window.wordrootWordLanguages = () => i18n.wordLanguages;
 </script>
 <script src="webmcp.js"></script>
 </body>
