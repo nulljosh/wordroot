@@ -109,28 +109,19 @@ final class LanguageNegotiationTests: XCTestCase {
     }
 }
 
-// Which Wiktionary edition serves the definitions decides what language the prose is in,
-// so the preference order is worth pinning down. The network paths around it are not
-// unit-testable without a URLProtocol stub; this covers the decision they act on.
-final class DefinitionEditionTests: XCTestCase {
-    func testEnglishReadersAskOnlyTheEnglishEdition() {
-        XCTAssertEqual(Wiktionary.definitionEditions(for: "en"), ["en"])
+// Only en.wiktionary serves the REST definition endpoint (fr/es/de answer 501, checked
+// 2026-08-27), so definitions are always English. This pins the edition we link out to.
+final class ReaderEditionTests: XCTestCase {
+    func testReaderEditionDropsTheScriptSubtagToReachARealEdition() {
+        XCTAssertEqual(Wiktionary.readerEdition(for: "zh-Hans"), "zh")
+        XCTAssertEqual(Wiktionary.readerEdition(for: "fr"), "fr")
+        XCTAssertEqual(Wiktionary.readerEdition(for: "en"), "en")
     }
 
-    func testOtherReadersAskTheirOwnEditionFirstAndEnglishAsBackstop() {
-        XCTAssertEqual(Wiktionary.definitionEditions(for: "fr"), ["fr", "en"])
-        XCTAssertEqual(Wiktionary.definitionEditions(for: "ar"), ["ar", "en"])
-    }
-
-    func testScriptSubtagIsDroppedToReachARealEdition() {
-        // zh-Hans is an interface locale; the Wiktionary edition is plain zh.
-        XCTAssertEqual(Wiktionary.definitionEditions(for: "zh-Hans"), ["zh", "en"])
-    }
-
-    func testEnglishIsAlwaysReachable() {
+    func testEveryShippedLocaleNamesANonEmptyEdition() {
         for language in Catalog.uiLanguages {
-            XCTAssertTrue(Wiktionary.definitionEditions(for: language.code).contains("en"),
-                          "\(language.code) has no English backstop")
+            XCTAssertFalse(Wiktionary.readerEdition(for: language.code).contains("-"),
+                           "\(language.code) yields a subtagged edition")
         }
     }
 }
