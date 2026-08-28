@@ -123,20 +123,47 @@ struct ChainLink: Identifiable {
     let ancestor: String
 }
 
+/// Definitions and the Wiktionary edition that wrote them — which is what decides the
+/// language the prose is in.
+struct Definitions {
+    let edition: String
+    let groups: [DefGroup]
+}
+
 struct Entry {
     let word: String
-    let groups: [DefGroup]
+    let definitions: Definitions?
     let chain: [ChainLink]
+}
+
+/// Serialises access to the retired-edition set across the concurrent lookups.
+actor RetiredEditions {
+    private var editions: Set<String> = []
+    func contains(_ edition: String) -> Bool { editions.contains(edition) }
+    func insert(_ edition: String) { editions.insert(edition) }
 }
 
 // MARK: - Wiktionary
 
 enum Wiktionary {
-    /// Every lookup runs against the English Wiktionary whatever the interface language is: it
-    /// carries entries for thousands of languages under one consistent set of etymology
+    /// Etymology always comes from the English Wiktionary, whatever the interface language is:
+    /// it carries entries for thousands of languages under one consistent set of etymology
     /// templates, whereas each other edition uses its own incompatible markup. The word
     /// language selects which `==Language==` section of the page to read.
     static let host = "https://en.wiktionary.org"
+
+    /// Editions found not to serve the definition endpoint at all. Kept in memory only: one
+    /// wasted probe per launch is cheaper than persisting a guess, and it keeps the privacy
+    /// policy's list of stored data short.
+    private static let retired = RetiredEditions()
+
+    /// Definitions are prose, so the edition decides what language the reader gets. Ask the
+    /// reader's own edition first — fr.wiktionary defines words in French — then English,
+    /// which is the one edition certain to answer.
+    static func definitionEditions(for uiLanguage: String) -> [String] {
+        let edition = uiLanguage.split(separator: "-").first.map(String.init) ?? uiLanguage
+        return edition == "en" ? ["en"] : [edition, "en"]
+    }
 
     // Only the three ancestry relations — pipeline/parse.py also collects `cog` and `root`,
     // which are deliberately left out here: cognates are siblings, not links in a chain.
@@ -153,18 +180,36 @@ enum Wiktionary {
         s.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
     }
 
-    static func definitions(_ word: String, language: String) async throws -> [DefGroup] {
+    private static func definitions(
+        from edition: String, word: String, language: String
+    ) async -> Definitions? {
+        if await retired.contains(edition) { return nil }
         let encoded = word.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? word
-        guard let url = URL(string: "\(host)/api/rest_v1/page/definition/\(encoded)") else { return [] }
-        let (data, resp) = try await URLSession.shared.data(for: request(url))
-        // 404 just means the word has no entry — not a network failure.
-        guard (resp as? HTTPURLResponse)?.statusCode == 200,
-              let root = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+        guard let url = URL(string: "https://\(edition).wiktionary.org/api/rest_v1/page/definition/\(encoded)")
+        else { return nil }
+        let data: Data
+        let resp: URLResponse
+        do {
+            (data, resp) = try await URLSession.shared.data(for: request(url))
+        } catch {
+            // Indistinguishable from the edition not being there; stop asking and let the
+            // English request carry the lookup.
+            await retired.insert(edition)
+            return nil
+        }
+        let status = (resp as? HTTPURLResponse)?.statusCode ?? 0
+        // 404 means this edition has no page for the word — a normal miss. Anything else
+        // non-200 means the endpoint is not served here at all.
+        guard status == 200 else {
+            if status != 404 { await retired.insert(edition) }
+            return nil
+        }
+        guard let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               // Keyed by the language of each section on the page, so "chat" carries both an
               // `en` and an `fr` entry. Taking only the requested one is what makes the picker
               // mean anything; a page with no section in that language is a miss, not English.
-              let entries = root[language] as? [[String: Any]] else { return [] }
-        return entries.compactMap { e in
+              let entries = root[language] as? [[String: Any]] else { return nil }
+        let groups: [DefGroup] = entries.compactMap { e in
             guard let pos = e["partOfSpeech"] as? String,
                   let defs = e["definitions"] as? [[String: Any]] else { return nil }
             let texts = defs.compactMap { $0["definition"] as? String }
@@ -172,6 +217,24 @@ enum Wiktionary {
                 .filter { !$0.isEmpty }
                 .prefix(4)
             return texts.isEmpty ? nil : DefGroup(pos: pos, defs: Array(texts))
+        }
+        return groups.isEmpty ? nil : Definitions(edition: edition, groups: groups)
+    }
+
+    /// Definitions plus the edition they came from. Editions are tried in preference order but
+    /// requested together, so the fallback costs no extra round trip.
+    static func definitions(_ word: String, language: String, editions: [String]) async -> Definitions? {
+        await withTaskGroup(of: (Int, Definitions?).self, returning: Definitions?.self) { group in
+            for (rank, edition) in editions.enumerated() {
+                group.addTask { (rank, await definitions(from: edition, word: word, language: language)) }
+            }
+            var best: (rank: Int, found: Definitions)?
+            for await (rank, found) in group {
+                guard let found else { continue }
+                if let current = best, current.rank <= rank { continue }
+                best = (rank, found)
+            }
+            return best?.found
         }
     }
 
@@ -221,12 +284,14 @@ enum Wiktionary {
     }
 
     /// Throws only on transport failure, so the UI can tell "offline" from "no such word".
-    static func entry(_ word: String, language: WordLanguage) async throws -> Entry? {
-        async let g = definitions(word, language: language.code)
+    /// Only the etymology request can throw: a definition lookup that cannot reach one edition
+    /// falls back to another rather than failing the whole entry.
+    static func entry(_ word: String, language: WordLanguage, editions: [String]) async throws -> Entry? {
+        async let d = definitions(word, language: language.code, editions: editions)
         async let c = etymology(word, section: language.section)
-        let (groups, chain) = try await (g, c)
-        if groups.isEmpty && chain.isEmpty { return nil }
-        return Entry(word: word, groups: groups, chain: chain)
+        let (found, chain) = try await (d, c)
+        if found == nil && chain.isEmpty { return nil }
+        return Entry(word: word, definitions: found, chain: chain)
     }
 }
 
@@ -240,6 +305,16 @@ struct ContentView: View {
     @State private var failed = false
     @State private var showingSettings = false
     @State private var searchTask: Task<Void, Never>?
+
+    /// The Wiktionary edition whose definitions would be in the reader's own language.
+    private var readerEdition: String {
+        Wiktionary.definitionEditions(for: settings.uiLanguage)[0]
+    }
+
+    private func readerWiktionaryURL(for word: String) -> URL? {
+        let encoded = word.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? word
+        return URL(string: "https://\(readerEdition).wiktionary.org/wiki/\(encoded)")
+    }
 
     /// Today's word in the current word language, or nil if we ship no list for it —
     /// better than offering an English word that has no entry in the selected language.
@@ -290,6 +365,11 @@ struct ContentView: View {
                 entry = nil
                 if let w = wordOfTheDay { search(w) }
             }
+            // The interface language also picks the edition the definitions come from, so it
+            // has to re-run the lookup rather than only re-render the labels.
+            .onChange(of: settings.uiLanguage) { _, _ in
+                search(query.isEmpty ? (wordOfTheDay ?? "") : query)
+            }
             .task {
                 if let w = wordOfTheDay { search(w) }
             }
@@ -298,10 +378,25 @@ struct ContentView: View {
 
     @ViewBuilder
     private func entrySections(_ entry: Entry) -> some View {
-        ForEach(entry.groups) { group in
-            Section(group.pos) {
-                ForEach(group.items) { def in
-                    Text("\(def.n). \(def.text)")
+        if let definitions = entry.definitions {
+            ForEach(definitions.groups) { group in
+                Section(group.pos) {
+                    ForEach(group.items) { def in
+                        Text("\(def.n). \(def.text)")
+                    }
+                }
+            }
+            // Say so when the reader asked for one language and got English prose, rather than
+            // letting them wonder — and offer the one route to definitions in their own language.
+            if definitions.edition != readerEdition, let url = readerWiktionaryURL(for: entry.word) {
+                Section {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(settings.t("ui.definitionsInEnglish"))
+                        Link(settings.t("ui.openOnWiktionary", ["wiktionary": settings.t("ui.wiktionary")]),
+                             destination: url)
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                 }
             }
         }
@@ -332,6 +427,7 @@ struct ContentView: View {
         searchTask?.cancel()
         guard !word.isEmpty else { return }
         let language = settings.word
+        let editions = Wiktionary.definitionEditions(for: settings.uiLanguage)
         searchTask = Task {
             try? await Task.sleep(for: .milliseconds(350))
             guard !Task.isCancelled else { return }
@@ -339,7 +435,7 @@ struct ContentView: View {
             // Not `try?`: it flattens Entry?? to Entry?, which would merge a transport
             // failure back into the "no such word" case this whole branch exists to separate.
             do {
-                let result = try await Wiktionary.entry(word, language: language)
+                let result = try await Wiktionary.entry(word, language: language, editions: editions)
                 guard !Task.isCancelled else { return }
                 entry = result
                 failed = false

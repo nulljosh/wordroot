@@ -32,12 +32,19 @@ Two independent axes:
   Ancient Greek, Sanskrit, Old English and Old Norse. Defaults to the interface language where
   a dictionary exists.
 
-Lookups always go to the English Wiktionary whatever the interface language is: it carries
-entries for thousands of languages under one consistent set of etymology templates (`inh`,
-`der`, `bor`), while each other edition uses its own incompatible markup. The word language
-selects which `==Language==` section of the page to read — so `chat` returns Middle English
-ancestry in English and Old French ancestry in French, rather than whichever appears first.
-Definitions are Wiktionary's own glosses and are written in English.
+**Etymology** always comes from the English Wiktionary, whatever the interface language is: it
+carries entries for thousands of languages under one consistent set of etymology templates
+(`inh`, `der`, `bor`), while each other edition uses its own incompatible markup. The word
+language selects which `==Language==` section of the page to read — so `chat` returns Middle
+English ancestry in English and Old French ancestry in French, rather than whichever appears
+first.
+
+**Definitions** are prose, so the edition decides what language the reader gets. Wordroot asks
+the reader's own edition first — `fr.wiktionary` defines words in French — and falls back to
+the English one, which is the only edition certain to answer. Both are requested together, so
+the fallback costs no extra round trip. An edition that turns out not to serve the definition
+endpoint is not asked again for the rest of the session. When the English fallback is what got
+used, the entry says so and links to the reader's own Wiktionary.
 
 `i18n/strings.json` is the only place a string is written. `scripts/gen-i18n.py` generates
 `web/i18n.js`, `landing/i18n.js` and `ios/Sources/Localized.swift` from it; those three are

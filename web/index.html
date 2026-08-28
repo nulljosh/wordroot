@@ -36,6 +36,8 @@
   .chain .meta { font-size: .85rem; color: var(--text2); }
   .chain .meta .lang { color: var(--accent); }
   .muted { color: var(--text2); }
+  .note { font-size: .78rem; color: var(--text2); margin: .6rem 0 0; }
+  .note a { color: var(--accent); }
   .attr { font-size: .75rem; color: var(--text2); margin-top: 2rem; }
   .attr a { color: var(--accent); }
   .topbar { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap; margin-bottom: 1rem; }
@@ -75,11 +77,22 @@ const strip = s => new DOMParser().parseFromString(s, 'text/html').body.textCont
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-// Every lookup runs against the English Wiktionary whatever the interface language is: it
+// Etymology always comes from the English Wiktionary, whatever the interface language is: it
 // carries entries for thousands of languages under one consistent set of etymology templates
 // ({{inh}}, {{der}}, {{bor}}), whereas fr./de./es. Wiktionary each use their own incompatible
 // markup. The word language below selects which ==Language== section of that page to read.
 const WIKI = 'https://en.wiktionary.org';
+
+// Definitions are different: they are prose, so the edition decides what language the reader
+// gets. Ask the reader's own edition first — fr.wiktionary defines words in French — and fall
+// back to English, which is the one edition certain to answer.
+const UI_EDITION = i18n.locale.split('-')[0];  // zh-Hans -> zh
+const DEF_EDITIONS = UI_EDITION === 'en' ? ['en'] : [UI_EDITION, 'en'];
+
+// Editions that turned out not to serve the definition endpoint at all. Session-only and
+// in memory: one wasted probe per session is cheaper than persisting a guess that may be
+// wrong tomorrow, and it keeps the privacy policy's list of stored data short.
+const noDefinitionEndpoint = new Set();
 
 function storedWordLang() {
   try { return localStorage.getItem(WORD_LANG_KEY); } catch (e) { return null; }
@@ -98,19 +111,42 @@ const wordLangMeta = () => i18n.wordLanguages.filter(l => l.code === wordLang)[0
 
 // ponytail: browsers forbid setting User-Agent on fetch, so the Wikimedia UA policy
 // can only be honoured on the native side (see ios/Sources/WordrootApp.swift).
-async function definitions(word, lang) {
-  const r = await fetch(`${WIKI}/api/rest_v1/page/definition/${encodeURIComponent(word)}`);
-  if (!r.ok) return null;
+async function definitionsFrom(edition, word, lang) {
+  if (noDefinitionEndpoint.has(edition)) return null;
+  let r;
+  try {
+    r = await fetch(`https://${edition}.wiktionary.org/api/rest_v1/page/definition/${encodeURIComponent(word)}`);
+  } catch {
+    // A network-level failure here is indistinguishable from the edition not being there;
+    // either way, stop asking it and let the English request carry the lookup.
+    noDefinitionEndpoint.add(edition);
+    return null;
+  }
+  // 404 means this edition has no page for the word — a normal miss. Anything else non-OK
+  // means the endpoint is not served here at all, so stop asking for the rest of the session.
+  if (!r.ok) {
+    if (r.status !== 404) noDefinitionEndpoint.add(edition);
+    return null;
+  }
   const d = await r.json();
   // Keyed by the language of each ==section== on the page, so "chat" carries both an `en`
   // and an `fr` entry. Taking only the requested one is what makes the picker mean anything;
-  // a page with no section in that language is a miss, not a fallback to English.
-  const entries = d[lang || wordLang];
-  if (!entries) return null;
-  return entries.map(e => ({
+  // a page with no section in that language is a miss, not a fallback to another language.
+  const entries = d[lang];
+  if (!entries || !entries.length) return null;
+  const groups = entries.map(e => ({
     pos: e.partOfSpeech,
     defs: e.definitions.map(x => strip(x.definition)).filter(Boolean).slice(0, 4),
-  }));
+  })).filter(g => g.defs.length);
+  return groups.length ? { edition, groups } : null;
+}
+
+/** Definitions plus the edition they came from, or null. Editions are tried in preference
+ *  order but requested together, so the fallback costs no extra round trip. */
+async function definitions(word, lang) {
+  const wanted = lang || wordLang;
+  const tried = await Promise.all(DEF_EDITIONS.map(e => definitionsFrom(e, word, wanted)));
+  return tried.filter(Boolean)[0] || null;
 }
 
 /** Body of the `==Name==` language section, or null. Stops at the next level-2 heading. */
@@ -148,11 +184,19 @@ function render(el, word, defs, chain) {
   // ancestor inside an English page, or a Latin one inside an Arabic page — and each element
   // has to pick up its own direction independently of the page's.
   let html = `<div class="card"><h2 dir="auto" lang="${esc(wordLang)}">${esc(word)}</h2>`;
-  if (defs && defs.length) {
-    for (const g of defs) {
-      // Glosses on the English Wiktionary are written in English whatever the entry's language.
-      html += `<div class="pos">${esc(g.pos)}</div><ol class="defs" lang="en" dir="auto">` +
+  if (defs && defs.groups.length) {
+    for (const g of defs.groups) {
+      // Glosses are prose in the edition's own language, not the looked-up word's.
+      html += `<div class="pos">${esc(g.pos)}</div><ol class="defs" lang="${esc(defs.edition)}" dir="auto">` +
         g.defs.map(d => `<li>${esc(d)}</li>`).join('') + '</ol>';
+    }
+    // Say so when the reader asked for one language and got English prose, rather than
+    // letting them wonder — and offer the one route to definitions in their own language.
+    if (defs.edition !== UI_EDITION) {
+      const href = `https://${UI_EDITION}.wiktionary.org/wiki/${encodeURIComponent(word)}`;
+      html += `<p class="note">${esc(t('ui.definitionsInEnglish'))} ` +
+        `<a href="${esc(href)}" target="_blank" rel="noopener">` +
+        `${esc(t('ui.openOnWiktionary', { wiktionary: t('ui.wiktionary') }))}</a></p>`;
     }
   } else {
     html += `<p class="muted">${esc(t('ui.noDefinition'))}</p>`;

@@ -109,6 +109,32 @@ final class LanguageNegotiationTests: XCTestCase {
     }
 }
 
+// Which Wiktionary edition serves the definitions decides what language the prose is in,
+// so the preference order is worth pinning down. The network paths around it are not
+// unit-testable without a URLProtocol stub; this covers the decision they act on.
+final class DefinitionEditionTests: XCTestCase {
+    func testEnglishReadersAskOnlyTheEnglishEdition() {
+        XCTAssertEqual(Wiktionary.definitionEditions(for: "en"), ["en"])
+    }
+
+    func testOtherReadersAskTheirOwnEditionFirstAndEnglishAsBackstop() {
+        XCTAssertEqual(Wiktionary.definitionEditions(for: "fr"), ["fr", "en"])
+        XCTAssertEqual(Wiktionary.definitionEditions(for: "ar"), ["ar", "en"])
+    }
+
+    func testScriptSubtagIsDroppedToReachARealEdition() {
+        // zh-Hans is an interface locale; the Wiktionary edition is plain zh.
+        XCTAssertEqual(Wiktionary.definitionEditions(for: "zh-Hans"), ["zh", "en"])
+    }
+
+    func testEnglishIsAlwaysReachable() {
+        for language in Catalog.uiLanguages {
+            XCTAssertTrue(Wiktionary.definitionEditions(for: language.code).contains("en"),
+                          "\(language.code) has no English backstop")
+        }
+    }
+}
+
 // The catalog is generated, so these guard the generator's output rather than hand-written
 // data: a surface that renders a key with no translation would fall back to English silently.
 final class CatalogTests: XCTestCase {

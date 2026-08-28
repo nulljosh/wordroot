@@ -2194,6 +2194,34 @@
       "zh-Hans": "拜占庭希腊语",
       "ko": "비잔틴 그리스어",
       "ar": "اليونانية البيزنطية"
+    },
+    "ui.definitionsInEnglish": {
+      "en": "These definitions are in English.",
+      "es": "Estas definiciones están en inglés.",
+      "fr": "Ces définitions sont en anglais.",
+      "de": "Diese Definitionen sind auf Englisch.",
+      "pt": "Estas definições estão em inglês.",
+      "it": "Queste definizioni sono in inglese.",
+      "nl": "Deze definities zijn in het Engels.",
+      "ru": "Эти определения на английском языке.",
+      "ja": "これらの定義は英語です。",
+      "zh-Hans": "这些释义为英文。",
+      "ko": "이 뜻풀이는 영어로 되어 있습니다.",
+      "ar": "هذه التعريفات باللغة الإنجليزية."
+    },
+    "ui.openOnWiktionary": {
+      "en": "Open on {wiktionary}",
+      "es": "Abrir en {wiktionary}",
+      "fr": "Ouvrir sur le {wiktionary}",
+      "de": "Im {wiktionary} öffnen",
+      "pt": "Abrir no {wiktionary}",
+      "it": "Apri sul {wiktionary}",
+      "nl": "Openen in {wiktionary}",
+      "ru": "Открыть в {wiktionary}",
+      "ja": "{wiktionary}で開く",
+      "zh-Hans": "在{wiktionary}中打开",
+      "ko": "{wiktionary}에서 열기",
+      "ar": "افتح في {wiktionary}"
     }
   }
 }

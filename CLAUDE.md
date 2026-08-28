@@ -13,9 +13,12 @@ Dictionary + etymology app. Killer feature: interactive etymology tree (word →
 ## Language rules
 - Two axes, kept separate: interface language (UI chrome) and word language (the language of
   the word being looked up).
-- All lookups hit **en.wiktionary.org** regardless of interface language — it is the only
+- **Etymology** always hits en.wiktionary.org regardless of interface language — it is the only
   edition whose `inh`/`der`/`bor` templates the parser understands, and it covers thousands of
   languages. The word language picks the `==Section==` to read, never the site to fetch.
+- **Definitions** try the reader's own edition first, then English. Not every edition serves
+  the REST definition endpoint, so English must always stay in the list as the backstop, and a
+  non-404 response retires an edition for the session rather than being retried per lookup.
 - Scope etymology parsing to the language section. The first `===Etymology===` on a page
   belongs to whichever language sorts first, which for a word like `chat` is the wrong one.
 - Never build a sentence by concatenating translated fragments; word order differs across the

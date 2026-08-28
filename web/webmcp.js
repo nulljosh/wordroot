@@ -21,7 +21,8 @@
   const tools = [
     {
       name: 'lookup_word',
-      description: 'Look up a word in Wordroot: returns its definitions and etymology (ancestor chain), and also updates the on-page results so the user sees the same lookup.',
+      description: 'Look up a word in Wordroot: returns its definitions and etymology (ancestor chain), and also updates the on-page results so the user sees the same lookup. '
+        + 'Definitions come from the reader\'s own Wiktionary edition where it has the word, otherwise the English one; definitionsLanguage says which.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -47,7 +48,14 @@
         // Only drive the page when the agent is asking about the language it is already
         // showing; otherwise the visible results would not match what was returned.
         if (lang.code === window.wordrootWordLanguage()) window.wordrootLookup(w);
-        return { word: w, language: lang.code, definitions: defs || [], etymology: chain };
+        return {
+          word: w,
+          language: lang.code,
+          definitions: defs ? defs.groups : [],
+          // Which Wiktionary edition wrote the glosses, and so what language they are in.
+          definitionsLanguage: defs ? defs.edition : null,
+          etymology: chain,
+        };
       },
     },
     {

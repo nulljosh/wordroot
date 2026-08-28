@@ -142,6 +142,8 @@ enum Catalog {
         "lang.la-med": "Medieval Latin",
         "lang.NL.": "New Latin",
         "lang.gkm": "Byzantine Greek",
+        "ui.definitionsInEnglish": "These definitions are in English.",
+        "ui.openOnWiktionary": "Open on {wiktionary}",
     ]
     private static let table_es: [String: String] = [
         "app.tagline": "Diccionario con etimología profunda",
@@ -175,6 +177,8 @@ enum Catalog {
         "lang.la-med": "latín medieval",
         "lang.NL.": "latín moderno",
         "lang.gkm": "griego bizantino",
+        "ui.definitionsInEnglish": "Estas definiciones están en inglés.",
+        "ui.openOnWiktionary": "Abrir en {wiktionary}",
     ]
     private static let table_fr: [String: String] = [
         "app.tagline": "Dictionnaire avec une étymologie approfondie",
@@ -208,6 +212,8 @@ enum Catalog {
         "lang.la-med": "latin médiéval",
         "lang.NL.": "latin moderne",
         "lang.gkm": "grec byzantin",
+        "ui.definitionsInEnglish": "Ces définitions sont en anglais.",
+        "ui.openOnWiktionary": "Ouvrir sur le {wiktionary}",
     ]
     private static let table_de: [String: String] = [
         "app.tagline": "Wörterbuch mit tiefgehender Etymologie",
@@ -241,6 +247,8 @@ enum Catalog {
         "lang.la-med": "Mittellatein",
         "lang.NL.": "Neulatein",
         "lang.gkm": "Byzantinisches Griechisch",
+        "ui.definitionsInEnglish": "Diese Definitionen sind auf Englisch.",
+        "ui.openOnWiktionary": "Im {wiktionary} öffnen",
     ]
     private static let table_pt: [String: String] = [
         "app.tagline": "Dicionário com etimologia profunda",
@@ -274,6 +282,8 @@ enum Catalog {
         "lang.la-med": "latim medieval",
         "lang.NL.": "latim moderno",
         "lang.gkm": "grego bizantino",
+        "ui.definitionsInEnglish": "Estas definições estão em inglês.",
+        "ui.openOnWiktionary": "Abrir no {wiktionary}",
     ]
     private static let table_it: [String: String] = [
         "app.tagline": "Dizionario con etimologia approfondita",
@@ -307,6 +317,8 @@ enum Catalog {
         "lang.la-med": "latino medievale",
         "lang.NL.": "latino moderno",
         "lang.gkm": "greco bizantino",
+        "ui.definitionsInEnglish": "Queste definizioni sono in inglese.",
+        "ui.openOnWiktionary": "Apri sul {wiktionary}",
     ]
     private static let table_nl: [String: String] = [
         "app.tagline": "Woordenboek met diepgaande etymologie",
@@ -340,6 +352,8 @@ enum Catalog {
         "lang.la-med": "Middeleeuws Latijn",
         "lang.NL.": "Nieuwlatijn",
         "lang.gkm": "Byzantijns Grieks",
+        "ui.definitionsInEnglish": "Deze definities zijn in het Engels.",
+        "ui.openOnWiktionary": "Openen in {wiktionary}",
     ]
     private static let table_ru: [String: String] = [
         "app.tagline": "Словарь с глубокой этимологией",
@@ -373,6 +387,8 @@ enum Catalog {
         "lang.la-med": "средневековая латынь",
         "lang.NL.": "новая латынь",
         "lang.gkm": "византийский греческий",
+        "ui.definitionsInEnglish": "Эти определения на английском языке.",
+        "ui.openOnWiktionary": "Открыть в {wiktionary}",
     ]
     private static let table_ja: [String: String] = [
         "app.tagline": "語源をたどる辞書",
@@ -406,6 +422,8 @@ enum Catalog {
         "lang.la-med": "中世ラテン語",
         "lang.NL.": "近代ラテン語",
         "lang.gkm": "ビザンチンギリシャ語",
+        "ui.definitionsInEnglish": "これらの定義は英語です。",
+        "ui.openOnWiktionary": "{wiktionary}で開く",
     ]
     private static let table_zh_Hans: [String: String] = [
         "app.tagline": "带有深度词源的词典",
@@ -439,6 +457,8 @@ enum Catalog {
         "lang.la-med": "中世纪拉丁语",
         "lang.NL.": "新拉丁语",
         "lang.gkm": "拜占庭希腊语",
+        "ui.definitionsInEnglish": "这些释义为英文。",
+        "ui.openOnWiktionary": "在{wiktionary}中打开",
     ]
     private static let table_ko: [String: String] = [
         "app.tagline": "깊이 있는 어원 사전",
@@ -472,6 +492,8 @@ enum Catalog {
         "lang.la-med": "중세 라틴어",
         "lang.NL.": "근대 라틴어",
         "lang.gkm": "비잔틴 그리스어",
+        "ui.definitionsInEnglish": "이 뜻풀이는 영어로 되어 있습니다.",
+        "ui.openOnWiktionary": "{wiktionary}에서 열기",
     ]
     private static let table_ar: [String: String] = [
         "app.tagline": "قاموس مع أصول متعمقة للكلمات",
@@ -505,6 +527,8 @@ enum Catalog {
         "lang.la-med": "اللاتينية الوسيطة",
         "lang.NL.": "اللاتينية الحديثة",
         "lang.gkm": "اليونانية البيزنطية",
+        "ui.definitionsInEnglish": "هذه التعريفات باللغة الإنجليزية.",
+        "ui.openOnWiktionary": "افتح في {wiktionary}",
     ]
 
     static let tables: [String: [String: String]] = [
