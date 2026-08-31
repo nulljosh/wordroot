@@ -164,18 +164,12 @@ See `docs/API.md` for the full tool table, linked from the README.
 ## From Apple Notes (imported 2026-08-27)
 - [ ] Wordroot iOS 1.0 and macOS 1.0 both APPROVED / Ready for Distribution (id6794988021) as of Aug 24 2026.
 
-## /api + /mcp surface
+## /api + /mcp surface — SHIPPED 2026-08-31
 
-Port curvely's pair: `functions/mcp.js` (copy unchanged, swap `serverInfo.name` and
-`VERSION`), `functions/api/[[route]].js` (rewrite only `ENDPOINTS` and `POSTS`), and a
-per-app `src/lib/tools.js` holding `lookup_root(word)` and `list_roots(prefix)` over
-`pipeline/wordroot.sqlite`. Both surfaces must read that one module so they cannot drift.
+Live at `wordroot.heyitsmejosh.com/api` and `/mcp`. Tools: `lookup_word`, `get_definitions`,
+`get_etymology`, `list_languages`. Both surfaces call `callTool()` in `src/lib/tools.js`.
 
-conway did this on 2026-08-31 and is the worked example — including the detail that
-wrangler's bundler handles a CommonJS source module, so nothing has to be duplicated.
-
-Unlike conway, the data here is a SQLite file: decide whether the Function reads it via D1
-or whether the roots are exported to JSON at build time. That choice is the whole task.
-# Roadmap
-
-- [ ] /api + /mcp endpoints: needs a storage decision first — D1 vs shipping the word data as static JSON.
+The D1-vs-JSON question that blocked this was the wrong question: neither. Wiktionary is the
+dataset and the app already reads it live from the browser, so the Function does too — the
+server just adds a real User-Agent and CORS-free access. `pipeline/wordroot.sqlite` stays a
+build-time artifact. Revisit storage when a rate limit or a latency measurement asks for it.

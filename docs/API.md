@@ -33,3 +33,29 @@ visiting the page can look words up the same way the UI does.
 
 No tool requires confirmation. Every tool only reads from Wiktionary's public API and reflects
 data back to the caller (or the page) — nothing is stored, mutated, or sent anywhere else.
+
+## HTTP API (Cloudflare Pages Functions)
+
+Wordroot now has a server surface at `https://wordroot.heyitsmejosh.com`. It reads
+Wiktionary live — there is no database — and both surfaces call the same `callTool()` in
+`src/lib/tools.js`, so REST and MCP cannot describe different behaviour.
+
+### REST (read-only, `GET`)
+
+| Endpoint | Returns |
+|---|---|
+| `/api` | The endpoint list and tool names. |
+| `/api/languages` | The supported word languages, as codes and names. |
+| `/api/word/:word?lang=` | Definitions + etymology chain. |
+| `/api/definitions/:word?lang=` | Definitions only, grouped by part of speech. |
+| `/api/etymology/:word?lang=` | Ancestors only (`inherited` / `derived` / `borrowed`). |
+
+`lang` accepts a code (`la`) or a section name (`Latin`); it defaults to English. An unknown
+language is a 400 naming the mistake, not a silent fall back to English on the wrong word.
+
+### MCP
+
+`POST /mcp`, JSON-RPC, stateless. Tools: `lookup_word`, `get_definitions`, `get_etymology`,
+`list_languages`. All read-only — nothing here is stored or mutated.
+
+Content is Wiktionary's, CC BY-SA 4.0; every `lookup_word` response carries its source URL.
