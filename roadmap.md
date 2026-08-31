@@ -176,3 +176,6 @@ wrangler's bundler handles a CommonJS source module, so nothing has to be duplic
 
 Unlike conway, the data here is a SQLite file: decide whether the Function reads it via D1
 or whether the roots are exported to JSON at build time. That choice is the whole task.
+# Roadmap
+
+- [ ] /api + /mcp endpoints: needs a storage decision first — D1 vs shipping the word data as static JSON.
