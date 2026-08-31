@@ -1,0 +1,5 @@
+name = "wordroot"
+compatibility_date = "2025-01-01"
+# This is what makes the root-level functions/ directory get picked up. Deploying dist/
+# directly (wrangler pages deploy dist) would ship the site with no API at all.
+pages_build_output_dir = "dist"
