@@ -316,7 +316,10 @@ footer select {
 // and as what a crawler or a JS-less reader sees; this swaps it in place.
 (function () {
   document.querySelectorAll('[data-i18n]').forEach(function (el) {
-    el.textContent = i18n.t(el.getAttribute('data-i18n'));
+    // A missing key returns the key itself; keep the inline English rather than printing it.
+    var key = el.getAttribute('data-i18n');
+    var value = i18n.t(key);
+    if (value !== key) el.textContent = value;
   });
   document.title = i18n.t('landing.title');
   var description = i18n.t('landing.description');
