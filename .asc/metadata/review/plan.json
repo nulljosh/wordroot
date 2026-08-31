@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-31T10:25:58Z",
+  "command": "metadata plan",
+  "reviewDir": ".asc/metadata/review",
+  "planPath": ".asc/metadata/review/plan.json",
+  "approvalPath": ".asc/metadata/review/approved.json",
+  "planHash": "4b326ee0d89c7e8a6ebc0326d47c6718f31cc0a33ed167ef8b169fd7cb93e2b8",
+  "options": {
+    "appId": "6794988021",
+    "appInfoId": "35fc383f-5187-41de-84a1-4b098ec7e19a",
+    "version": "1.0.1",
+    "platform": "IOS",
+    "dir": "metadata",
+    "includes": [
+      "localizations"
+    ],
+    "allowDeletes": false
+  },
+  "plan": {
+    "appId": "6794988021",
+    "appInfoId": "35fc383f-5187-41de-84a1-4b098ec7e19a",
+    "version": "1.0.1",
+    "versionId": "80723e06-c65e-4cb3-b3c6-0348694a3cba",
+    "dir": "metadata",
+    "dryRun": true,
+    "includes": [
+      "localizations"
+    ],
+    "adds": [
+      {
+        "key": "version:1.0.1:en-US:promotionalText",
+        "scope": "version",
+        "locale": "en-US",
+        "version": "1.0.1",
+        "field": "promotionalText",
+        "reason": "field exists locally but not remotely",
+        "to": "Look up any word and follow it back through Latin, Greek and Old English. The full origin chain, not just a definition."
+      }
+    ],
+    "updates": [],
+    "deletes": [],
+    "apiCalls": [
+      {
+        "operation": "update_localization",
+        "scope": "version",
+        "count": 1
+      }
+    ]
+  }
+}
