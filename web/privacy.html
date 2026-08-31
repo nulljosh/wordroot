@@ -20,6 +20,10 @@
     border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text);
   }
 </style>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#b5651d">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 <body>
 <div class="topbar"><h1 id="heading"></h1><span id="picker"></span></div>
@@ -75,5 +79,6 @@ document.getElementById('body').innerHTML =
 document.getElementById('back').textContent =
   (i18n.dir === 'rtl' ? '→ ' : '← ') + t('privacy.back');
 </script>
+  <script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('/sw.js'));</script>
 </body>
 </html>

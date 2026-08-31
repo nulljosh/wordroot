@@ -50,6 +50,10 @@
   .search { display: flex; gap: .5rem; align-items: stretch; }
   .search select { font-size: .95rem; flex: 0 0 auto; }
 </style>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#b5651d">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 <body>
 <div class="topbar">
@@ -309,5 +313,6 @@ window.wordrootWordLanguage = () => wordLang;
 window.wordrootWordLanguages = () => i18n.wordLanguages;
 </script>
 <script src="webmcp.js"></script>
+  <script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('/sw.js'));</script>
 </body>
 </html>
