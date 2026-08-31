@@ -9,20 +9,22 @@
 <style>
   :root {
     --bg: #ffffff; --bg2: #f5f5f5; --text: #252a49; --text2: #666;
-    --accent: #5B9BD5; --border: #e8e8e8;
+    --accent: #5B9BD5;
+  --link: #43739e; --border: #e8e8e8;
   }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #111111; --bg2: #1a1a1a; --text: #e8e8f0; --text2: rgba(232,232,240,.6); --border: rgba(232,232,240,.1); }
+    :root { --bg: #111111;
+    --link: #5B9BD5; --bg2: #1a1a1a; --text: #e8e8f0; --text2: rgba(232,232,240,.6); --border: rgba(232,232,240,.1); }
   }
   * { box-sizing: border-box; }
   body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); max-width: 640px; margin: 0 auto; padding: 6vh 1rem 4rem; }
   h1 { font-size: 1.4rem; letter-spacing: -.02em; margin: 0; }
   input { width: 100%; font-size: 1.25rem; padding: .75rem 1rem; border: 1px solid var(--border); border-radius: 10px; background: var(--bg2); color: var(--text); outline: none; }
-  input:focus { border-color: var(--accent); }
+  input:focus { border-color: var(--link, var(--accent)); }
   .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; margin-top: 1.5rem; }
   .card h2 { margin: 0 0 .25rem; font-size: 1.2rem; }
   .label { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--text2); margin-bottom: .5rem; }
-  .pos { color: var(--accent); font-size: .85rem; font-weight: 600; margin-top: .75rem; }
+  .pos { color: var(--link, var(--accent)); font-size: .85rem; font-weight: 600; margin-top: .75rem; }
   /* padding-inline, not padding-left: the numbers must sit on the start edge in Arabic too */
   ol.defs { margin: .25rem 0 0; padding-inline-start: 1.25rem; }
   ol.defs li { margin: .3rem 0; line-height: 1.45; }
@@ -34,12 +36,12 @@
      differs in every one of the twelve locales; two lines read correctly in all of them. */
   .chain .anc { font-weight: 600; }
   .chain .meta { font-size: .85rem; color: var(--text2); }
-  .chain .meta .lang { color: var(--accent); }
+  .chain .meta .lang { color: var(--link, var(--accent)); }
   .muted { color: var(--text2); }
   .note { font-size: .78rem; color: var(--text2); margin: .6rem 0 0; }
-  .note a { color: var(--accent); }
+  .note a { color: var(--link, var(--accent)); }
   .attr { font-size: .75rem; color: var(--text2); margin-top: 2rem; }
-  .attr a { color: var(--accent); }
+  .attr a { color: var(--link, var(--accent)); }
   .topbar { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap; margin-bottom: 1rem; }
   select {
     font: inherit; font-size: .8rem; padding: .3rem 1.6rem .3rem .5rem; max-width: 11rem;

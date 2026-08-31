@@ -7,12 +7,14 @@
 <script src="i18n.js"></script>
 <script>window.i18n.applyDocumentLanguage();</script>
 <style>
-  :root { --bg:#fff; --text:#252a49; --text2:#666; --accent:#5B9BD5; --border:#e8e8e8; }
-  @media (prefers-color-scheme: dark) { :root { --bg:#111; --text:#e8e8f0; --text2:rgba(232,232,240,.6); --border:rgba(232,232,240,.1); } }
+  :root { --bg:#fff; --text:#252a49; --text2:#666; --accent:#5B9BD5;
+  --link: #4779a6; --border:#e8e8e8; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#111;
+    --link: #5B9BD5; --text:#e8e8f0; --text2:rgba(232,232,240,.6); --border:rgba(232,232,240,.1); } }
   body { font-family:-apple-system, system-ui, sans-serif; background:var(--bg); color:var(--text); max-width:640px; margin:0 auto; padding:6vh 1rem 4rem; line-height:1.55; }
   h1 { font-size:1.4rem; letter-spacing:-.02em; }
   h2 { font-size:1rem; margin-top:2rem; }
-  a { color:var(--accent); }
+  a { color: var(--link, var(--accent)); }
   .muted { color:var(--text2); font-size:.85rem; }
   .topbar { display:flex; align-items:baseline; justify-content:space-between; gap:.75rem; flex-wrap:wrap; }
   .topbar select {
