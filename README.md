@@ -4,6 +4,8 @@
 
 ![version](https://img.shields.io/badge/version-0.1.0-blue)
 
+**Live:** https://wordroot.heyitsmejosh.com
+
 Dictionary with deep etymology. Trace any word back through Latin, Greek, and Proto-Indo-European with an interactive etymology tree and cognate links.
 
 ## Why
