@@ -167,7 +167,9 @@ enum Wiktionary {
     }
 
     static func stripTags(_ s: String) -> String {
-        s.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
+        let noStyleScript = s.replacingOccurrences(
+            of: "<(style|script)\\b[^>]*>.*?</\\1>", with: "", options: [.regularExpression, .caseInsensitive])
+        return noStyleScript.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
     }
 
     /// Definitions are prose, so the edition decides what language the reader gets — but only
