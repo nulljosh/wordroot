@@ -11,3 +11,4 @@ xcuserdata/
 ios/.asc/artifacts/
 dist/
 ios/.asc/export-mac/
+.build/

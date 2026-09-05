@@ -173,3 +173,6 @@ The D1-vs-JSON question that blocked this was the wrong question: neither. Wikti
 dataset and the app already reads it live from the browser, so the Function does too, the
 server just adds a real User-Agent and CORS-free access. `pipeline/wordroot.sqlite` stays a
 build-time artifact. Revisit storage when a rate limit or a latency measurement asks for it.
+
+## TUI pilot (2026-09-05)
+- `wordroot-tui` SwiftPM target (SwiftTUI). `swift build && ./.build/debug/wordroot-tui etymology` fetches the live `/api/word/:word` and renders definitions + etymology chain as a terminal card. Needs a real TTY.
