@@ -61,6 +61,8 @@ python3 pipeline/test_parse.py
 node scripts/test-web.mjs             # web app + landing page: i18n and lookup
 ```
 
+**Terminal:** `swift build && ./.build/debug/wordroot-tui etymology` — see [tui/](tui/)
+
 ## License
 MIT © 2026 Joshua Trommel
 
