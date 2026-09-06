@@ -8,6 +8,12 @@
 
 Where did that word come from? Look it up and follow it back, through Latin, Greek, all the way to Proto-Indo-European. A dictionary with the roots showing.
 
+## Screenshots
+
+<p>
+<img src="screenshots/appstore/mac/en-US/01-word-of-the-day.png" alt="Wordroot">
+</p>
+
 ## Why
 No app pairs a clean dictionary with real etymology. The big dictionary apps have ads and no history. The one etymology app is mediocre.
 
