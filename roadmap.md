@@ -138,7 +138,7 @@ lands on "mother", just compute the index and shoot on a day that does not.
 
 ## Backlog
 - [ ] Full Wiktionary dump parse still pending (v1 uses the live REST API instead), large scoped feature, needs its own session
-- [ ] Hero animation pass (words instead of book covers, minor animations matching bookrank style)
+- [x] Hero animation pass (words instead of book covers, minor animations matching bookrank style) — shipped, drifting word wall on the landing
 
 > Resume note (2026-08-11, triaged 2026-08-17): the `wip: partial work from /work notes ingest` commit
 > (`765356f`) is **landing-page only**, `landing/index.html`, `landing/icon.svg`, `scripts/build-site.sh`,
@@ -153,7 +153,7 @@ iOS 1.0 Waiting for Review (submitted 2026-08-18); **macOS 1.0 Waiting for Revie
 
 ## Ingested 2026-08-24
 
-- [ ] **Hero animation pass** (Notes 2026-08-24). Reference: bookrank's hero animation, copy its hero style and overall vibe. Instead of book covers, use **words**. Minor animations, not a full redesign.
+- [x] **Hero animation pass** (Notes 2026-08-24, done). Reference: bookrank's hero animation, copy its hero style and overall vibe. Instead of book covers, use **words**. Minor animations, not a full redesign.
 
 ## WebMCP + REST API rollout -- shipped 2026-08-27
 
@@ -162,7 +162,7 @@ Done. 3 read-only tools: `lookup_word`, `get_etymology`, `get_word_of_the_day`. 
 See `docs/API.md` for the full tool table, linked from the README.
 
 ## From Apple Notes (imported 2026-08-27)
-- [ ] Wordroot iOS 1.0 and macOS 1.0 both APPROVED / Ready for Distribution (id6794988021) as of Aug 24 2026.
+- [x] Wordroot iOS 1.0 and macOS 1.0 both APPROVED / Ready for Distribution (id6794988021) as of Aug 24 2026.
 
 ## /api + /mcp surface, SHIPPED 2026-08-31
 
