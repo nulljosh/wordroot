@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://wordroot.heyitsmejosh.com/sitemap.xml
