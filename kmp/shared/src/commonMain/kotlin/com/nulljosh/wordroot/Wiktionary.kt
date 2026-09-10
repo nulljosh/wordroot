@@ -35,6 +35,8 @@ class WiktionaryClient {
         install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true }) }
     }
 
+    // Not every edition serves the REST definition endpoint; a failure here retires that
+    // edition for the whole session instead of being retried on every lookup.
     private val noDefinitionEndpoint = mutableSetOf<String>()
 
     private suspend fun definitionsFrom(edition: String, word: String, lang: String): Definitions? {
@@ -83,6 +85,9 @@ class WiktionaryClient {
         }
         val wikitext = response["parse"]?.jsonObject?.get("wikitext")?.jsonObject?.get("*")?.jsonPrimitive?.content
             ?: return emptyList()
+        // Scoped to the word's own language section: the first Etymology heading on the page
+        // belongs to whichever language sorts first, which for a word spelled the same across
+        // languages (e.g. "chat") is somebody else's history.
         val section = languageSection(wikitext, meta.section) ?: return emptyList()
         val etymBlock = etymologyBlock(section) ?: return emptyList()
 
