@@ -264,6 +264,42 @@ enum Wiktionary {
 
 // MARK: - UI
 
+/// Stable per-word hue (same formula as web's `hueForWord`), so the same word always paints
+/// the same background across platforms.
+private func hueForWord(_ word: String) -> Double {
+    var h: UInt32 = 0
+    for scalar in word.unicodeScalars { h = h &* 31 &+ scalar.value }
+    return Double(h % 360)
+}
+
+/// Two soft, drifting color blobs behind the list. `phase` loops via a repeating animation
+/// driven from `ContentView`, so this view only needs to know the current hue and offset.
+private struct WordBackground: View {
+    var hue: Double
+    var phase: Bool
+
+    var body: some View {
+        GeometryReader { geo in
+            ZStack {
+                Circle()
+                    .fill(Color(hue: hue / 360, saturation: 0.6, brightness: 0.85).opacity(0.35))
+                    .frame(width: geo.size.width * 1.1)
+                    .blur(radius: 60)
+                    .offset(x: phase ? -geo.size.width * 0.25 : geo.size.width * 0.15,
+                            y: phase ? -geo.size.height * 0.3 : -geo.size.height * 0.1)
+                Circle()
+                    .fill(Color(hue: ((hue + 60).truncatingRemainder(dividingBy: 360)) / 360, saturation: 0.6, brightness: 0.85).opacity(0.3))
+                    .frame(width: geo.size.width * 1.1)
+                    .blur(radius: 60)
+                    .offset(x: phase ? geo.size.width * 0.3 : -geo.size.width * 0.1,
+                            y: phase ? geo.size.height * 0.35 : geo.size.height * 0.15)
+            }
+            .frame(width: geo.size.width, height: geo.size.height)
+        }
+        .ignoresSafeArea()
+    }
+}
+
 struct ContentView: View {
     @EnvironmentObject private var settings: Settings
     @State private var query = ""
@@ -272,6 +308,7 @@ struct ContentView: View {
     @State private var failed = false
     @State private var showingSettings = false
     @State private var searchTask: Task<Void, Never>?
+    @State private var bgPhase = false
 
     /// The Wiktionary edition whose definitions would be in the reader's own language.
     private var readerEdition: String {
@@ -306,6 +343,11 @@ struct ContentView: View {
                 } else if !query.isEmpty {
                     Text(settings.t("ui.nothingFound")).foregroundStyle(.secondary)
                 }
+            }
+            .scrollContentBackground(.hidden)
+            .background(WordBackground(hue: hueForWord(entry?.word ?? wordOfTheDay ?? "wordroot"), phase: bgPhase))
+            .onAppear {
+                withAnimation(.easeInOut(duration: 9).repeatForever(autoreverses: true)) { bgPhase = true }
             }
             .searchable(text: $query, prompt: Text(settings.t("ui.searchPlaceholder")))
             .navigationTitle(entry?.word.capitalized ?? "Wordroot")

@@ -17,7 +17,22 @@
     --link: #5B9BD5; --bg2: #1a1a1a; --text: #e8e8f0; --text2: rgba(232,232,240,.6); --border: rgba(232,232,240,.1); }
   }
   * { box-sizing: border-box; }
-  body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); max-width: 640px; margin: 0 auto; padding: 6vh 1rem 4rem; }
+  /* ponytail: hue is set per-word via JS; the gradient itself never changes, just drifts and rotates */
+  #bg {
+    position: fixed; inset: 0; z-index: -1; --hue: 210;
+    background: radial-gradient(60% 50% at 30% 20%, hsl(var(--hue) 70% 55% / .35), transparent 60%),
+      radial-gradient(50% 60% at 80% 70%, hsl(calc(var(--hue) + 60) 70% 55% / .3), transparent 60%),
+      var(--bg);
+    background-size: 200% 200%;
+    animation: bgDrift 18s ease-in-out infinite alternate;
+    transition: filter 1s ease;
+  }
+  @keyframes bgDrift {
+    0% { background-position: 0% 0%, 100% 100%; }
+    100% { background-position: 100% 40%, 0% 60%; }
+  }
+  @media (prefers-reduced-motion: reduce) { #bg { animation: none; } }
+  body { font-family: -apple-system, system-ui, sans-serif; background: transparent; color: var(--text); max-width: 640px; margin: 0 auto; padding: 6vh 1rem 4rem; }
   h1 { font-size: 1.4rem; letter-spacing: -.02em; margin: 0; }
   input { width: 100%; font-size: 1.25rem; padding: .75rem 1rem; border: 1px solid var(--border); border-radius: 10px; background: var(--bg2); color: var(--text); outline: none; }
   input:focus { border-color: var(--link, var(--accent)); }
@@ -58,6 +73,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 <body>
+<div id="bg"></div>
 <div class="topbar">
   <h1>Wordroot</h1>
   <span id="uiPicker"></span>
@@ -221,7 +237,19 @@ function render(el, word, defs, chain) {
   el.innerHTML = html + '</div>';
 }
 
+// ponytail: a stable hash of the word picks the hue, so the same word always paints the
+// same background and different words visibly differ, without fetching or storing anything.
+function hueForWord(word) {
+  let h = 0;
+  for (const c of word) h = (h * 31 + c.codePointAt(0)) >>> 0;
+  return h % 360;
+}
+function setBgWord(word) {
+  $('bg').style.setProperty('--hue', hueForWord(word));
+}
+
 async function lookup(word, el) {
+  setBgWord(word);
   el.innerHTML = `<p class="muted">${esc(t('ui.lookingUp'))}</p>`;
   const lang = wordLang;
   try {

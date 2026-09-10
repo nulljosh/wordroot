@@ -2,7 +2,7 @@
 
 # Wordroot
 
-![version](https://img.shields.io/badge/version-0.1.0-blue)
+![version](https://img.shields.io/badge/version-1.0.2-blue)
 
 **Live:** https://wordroot.heyitsmejosh.com
 
