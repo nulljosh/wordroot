@@ -421,5 +421,39 @@ cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.12)}
   });
 })();
 </script>
+<style>
+html.js .reveal{opacity:0;transform:translateY(20px)}
+html.js .reveal.in-view{opacity:1;transform:translateY(0);transition:opacity .6s ease,transform .6s ease}
+@media (prefers-reduced-motion: reduce){html.js .reveal{opacity:1!important;transform:none!important;transition:none!important}}
+</style>
+<script>
+document.documentElement.classList.add('js');
+(function(){
+  var reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduced && 'IntersectionObserver' in window) {
+    var targets = document.querySelectorAll('section.features .feature, .xp-card, section.closing');
+    targets.forEach(function(el){ el.classList.add('reveal'); });
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); } });
+    }, {threshold: 0.15});
+    targets.forEach(function(el){ io.observe(el); });
+  }
+  if (!reduced) {
+    var layer = document.getElementById('heroWall');
+    if (layer) {
+      var ticking = false;
+      window.addEventListener('scroll', function(){
+        if (!ticking) {
+          requestAnimationFrame(function(){
+            layer.style.transform = 'translateY(' + ((window.scrollY || 0) * 0.35) + 'px)';
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, {passive: true});
+    }
+  }
+})();
+</script>
 </body>
 </html>
