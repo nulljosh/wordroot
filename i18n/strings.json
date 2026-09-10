@@ -1313,6 +1313,20 @@
       "ko": "오늘의 단어: {word}",
       "ar": "كلمة اليوم: {word}"
     },
+    "ui.resultsFor": {
+      "en": "Results for “{word}”",
+      "es": "Resultados de «{word}»",
+      "fr": "Résultats pour « {word} »",
+      "de": "Ergebnisse für „{word}“",
+      "pt": "Resultados para «{word}»",
+      "it": "Risultati per «{word}»",
+      "nl": "Resultaten voor ‘{word}’",
+      "ru": "Результаты по запросу «{word}»",
+      "ja": "「{word}」の検索結果",
+      "zh-Hans": "“{word}” 的搜索结果",
+      "ko": "‘{word}’ 검색 결과",
+      "ar": "نتائج «{word}»"
+    },
     "ui.origin": {
       "en": "Origin",
       "es": "Origen",

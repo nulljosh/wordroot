@@ -27,6 +27,14 @@
     animation: bgDrift 18s ease-in-out infinite alternate;
     transition: filter 1s ease;
   }
+  /* A real photo of the word replaces the gradient wash once one loads; #bg stays as the
+     always-present fallback for words with no Wikipedia photo. */
+  #bgPhoto {
+    position: fixed; inset: 0; z-index: -1; background-size: cover; background-position: center;
+    opacity: 0; transition: opacity .6s ease;
+  }
+  #bgPhoto.on { opacity: 1; }
+  #bgPhoto::after { content: ''; position: absolute; inset: 0; background: var(--bg); opacity: .55; }
   @keyframes bgDrift {
     0% { background-position: 0% 0%, 100% 100%; }
     100% { background-position: 100% 40%, 0% 60%; }
@@ -74,6 +82,7 @@
 </head>
 <body>
 <div id="bg"></div>
+<div id="bgPhoto"></div>
 <div class="topbar">
   <h1>Wordroot</h1>
   <span id="uiPicker"></span>
@@ -209,7 +218,8 @@ function render(el, word, defs, chain) {
   // dir="auto" throughout: the headword and its ancestors can be in any script — an Arabic
   // ancestor inside an English page, or a Latin one inside an Arabic page — and each element
   // has to pick up its own direction independently of the page's.
-  let html = `<div class="card"><h2 dir="auto" lang="${esc(wordLang)}">${esc(word)}</h2>`;
+  let html = `<div class="card"><div class="label">${esc(t('ui.resultsFor', { word }))}</div>` +
+    `<h2 dir="auto" lang="${esc(wordLang)}">${esc(word)}</h2>`;
   if (defs && defs.groups.length) {
     for (const g of defs.groups) {
       // Glosses are prose in the edition's own language, not the looked-up word's.
@@ -244,8 +254,30 @@ function hueForWord(word) {
   for (const c of word) h = (h * 31 + c.codePointAt(0)) >>> 0;
   return h % 360;
 }
-function setBgWord(word) {
+// The word's own Wikipedia photo, same source as iOS/Mac — best-effort, no key needed.
+async function photoFor(word) {
+  try {
+    const r = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(word)}`);
+    if (!r.ok) return null;
+    const j = await r.json();
+    return j.originalimage?.source || j.thumbnail?.source || null;
+  } catch { return null; }
+}
+
+let bgToken = 0;
+async function setBgWord(word) {
   $('bg').style.setProperty('--hue', hueForWord(word));
+  const token = ++bgToken;
+  const photo = $('bgPhoto');
+  photo.classList.remove('on');
+  const src = await photoFor(word);
+  if (token !== bgToken) return;  // a newer search landed while this one was in flight
+  if (src) {
+    photo.style.backgroundImage = `url("${src}")`;
+    photo.classList.add('on');
+  } else {
+    photo.style.backgroundImage = '';
+  }
 }
 
 async function lookup(word, el) {
