@@ -176,3 +176,7 @@ build-time artifact. Revisit storage when a rate limit or a latency measurement 
 
 ## TUI pilot (2026-09-05)
 - `wordroot-tui` SwiftPM target (SwiftTUI). `swift build && ./.build/debug/wordroot-tui etymology` fetches the live `/api/word/:word` and renders definitions + etymology chain as a terminal card. Needs a real TTY.
+
+## 1.0.2 shipped (2026-09-09)
+- [x] Animated background with word-derived hue (web: CSS gradient + JS hash; iOS/macOS: SwiftUI blurred drifting color blobs). Same word always produces the same color, deterministic. Commit 55a013b, web deployed, iOS 1.0.2 submitted to review.
+- iOS 1.0.2 build 8 (ASC build 202609091902) now WAITING_FOR_REVIEW
