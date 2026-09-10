@@ -118,6 +118,7 @@ enum Catalog {
         "ui.searchPlaceholder": "Look up a word",
         "ui.wotd": "Word of the day",
         "ui.wotdWord": "Word of the day: {word}",
+        "ui.resultsFor": "Results for “{word}”",
         "ui.origin": "Origin",
         "ui.lookingUp": "Looking up…",
         "ui.noDefinition": "No definition found.",

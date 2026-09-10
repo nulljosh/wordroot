@@ -135,6 +135,7 @@ struct Entry {
     let word: String
     let definitions: Definitions?
     let chain: [ChainLink]
+    let photoURL: URL?
 }
 
 // MARK: - Wiktionary
@@ -251,14 +252,30 @@ enum Wiktionary {
         return chain
     }
 
+    /// A photo for the word itself, from Wikipedia's own summary endpoint — the one page most
+    /// likely to carry a real photo of the thing the word names, rather than a stock-photo search.
+    /// Best-effort: any failure (no article, no image, offline) just means no photo.
+    static func photo(_ word: String) async -> URL? {
+        let encoded = word.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? word
+        guard let url = URL(string: "https://en.wikipedia.org/api/rest_v1/page/summary/\(encoded)") else { return nil }
+        guard let (data, resp) = try? await URLSession.shared.data(for: request(url)),
+              (resp as? HTTPURLResponse)?.statusCode == 200,
+              let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let source = (root["originalimage"] as? [String: Any])?["source"] as? String
+                ?? (root["thumbnail"] as? [String: Any])?["source"] as? String
+        else { return nil }
+        return URL(string: source)
+    }
+
     /// Throws only on transport failure, so the UI can tell "offline" from "no such word".
     /// Only the etymology request can throw: a failed definition lookup leaves the etymology.
     static func entry(_ word: String, language: WordLanguage) async throws -> Entry? {
         async let d = definitions(word, language: language.code)
         async let c = etymology(word, section: language.section)
-        let (found, chain) = try await (d, c)
+        async let p = photo(word)
+        let (found, chain, photoURL) = try await (d, c, p)
         if found == nil && chain.isEmpty { return nil }
-        return Entry(word: word, definitions: found, chain: chain)
+        return Entry(word: word, definitions: found, chain: chain, photoURL: photoURL)
     }
 }
 
@@ -300,6 +317,33 @@ private struct WordBackground: View {
     }
 }
 
+/// The word's own photo, cropped to fill and dimmed so list text stays legible over it.
+/// Falls back to the hue-blob wash when the word has no Wikipedia photo (proper nouns aside,
+/// most dictionary words — verbs, function words — never will).
+private struct PhotoBackground: View {
+    var url: URL?
+    var hue: Double
+    var phase: Bool
+
+    var body: some View {
+        ZStack {
+            if let url {
+                AsyncImage(url: url) { imagePhase in
+                    if case .success(let image) = imagePhase {
+                        image.resizable().scaledToFill()
+                    } else {
+                        WordBackground(hue: hue, phase: phase)
+                    }
+                }
+            } else {
+                WordBackground(hue: hue, phase: phase)
+            }
+            Color.black.opacity(0.45)
+        }
+        .ignoresSafeArea()
+    }
+}
+
 struct ContentView: View {
     @EnvironmentObject private var settings: Settings
     @State private var query = ""
@@ -335,6 +379,8 @@ struct ContentView: View {
                 } else if let entry {
                     if query.isEmpty {
                         Section {} header: { Text(settings.t("ui.wotdWord", ["word": entry.word])) }
+                    } else {
+                        Section {} header: { Text(settings.t("ui.resultsFor", ["word": entry.word])) }
                     }
                     entrySections(entry)
                 } else if failed {
@@ -345,7 +391,7 @@ struct ContentView: View {
                 }
             }
             .scrollContentBackground(.hidden)
-            .background(WordBackground(hue: hueForWord(entry?.word ?? wordOfTheDay ?? "wordroot"), phase: bgPhase))
+            .background(PhotoBackground(url: entry?.photoURL, hue: hueForWord(entry?.word ?? wordOfTheDay ?? "wordroot"), phase: bgPhase))
             .onAppear {
                 withAnimation(.easeInOut(duration: 9).repeatForever(autoreverses: true)) { bgPhase = true }
             }
