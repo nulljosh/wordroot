@@ -3,6 +3,7 @@
 # Wordroot
 
 ![version](https://img.shields.io/badge/version-1.0.2-blue)
+![license](https://img.shields.io/badge/license-MIT-green) [![GitHub](https://img.shields.io/badge/GitHub-nulljosh%2Fwordroot-black?logo=github)](https://github.com/nulljosh/wordroot)
 
 **Live:** https://wordroot.heyitsmejosh.com
 
