@@ -12,7 +12,8 @@ Where did that word come from? Look it up and follow it back, through Latin, Gre
 ## Screenshots
 
 <p>
-<img src="screenshots/wordroot-1.jpg" alt="Wordroot">
+<img src="screenshots/wordroot-1.jpg" width="49%" alt="Wordroot on Mac">
+<img src="screenshots/wordroot-2.jpg" width="49%" alt="Wordroot on iPhone">
 </p>
 
 ## Why
