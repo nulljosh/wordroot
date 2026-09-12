@@ -537,6 +537,11 @@ struct LanguageSettingsView: View {
                     }
                     .labelsHidden()
                 }
+                Section {
+                    Text(verbatim: "Wordroot \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "") (\(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ""))")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
             .navigationTitle(settings.t("ui.settings"))
             .toolbar {
