@@ -12,7 +12,7 @@ Where did that word come from? Look it up and follow it back, through Latin, Gre
 ## Screenshots
 
 <p>
-<img src="screenshots/appstore/mac/en-US/01-word-of-the-day.png" alt="Wordroot">
+<img src="screenshots/wordroot-1.jpg" alt="Wordroot">
 </p>
 
 ## Why

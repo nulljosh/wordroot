@@ -28,6 +28,28 @@
           "run": "asc publish appstore --app $IOS_APP_ID --ipa .asc/artifacts/Wordroot.ipa --version $VERSION --wait --submit --confirm --output json"
         }
       ]
+    },
+    "ship-mac": {
+      "description": "Bump, archive, upload, submit macOS",
+      "steps": [
+        {
+          "name": "bump",
+          "run": "cd ios && asc xcode version edit --version \"$VERSION\" --build-number \"$(date +%Y%m%d%H%M)\""
+        },
+        {
+          "name": "archive",
+          "run": "cd ios && asc xcode archive --project Wordroot.xcodeproj --scheme Wordroot --archive-path ../.asc/artifacts/WordrootMac.xcarchive --overwrite --xcodebuild-flag=-skipPackagePluginValidation --xcodebuild-flag=-destination --xcodebuild-flag='generic/platform=macOS' --output json"
+        },
+        {
+          "name": "export",
+          "run": "rm -rf .asc/export-mac && xcodebuild -exportArchive -archivePath .asc/artifacts/WordrootMac.xcarchive -exportOptionsPlist ios/.asc/MacExportOptions.plist -exportPath .asc/export-mac"
+        },
+        {
+          "name": "publish",
+          "if": "SUBMIT",
+          "run": "asc builds upload --pkg .asc/export-mac/Wordroot.pkg --app $IOS_APP_ID --platform MAC_OS --version $VERSION --build-number \"$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' .asc/artifacts/WordrootMac.xcarchive/Products/Applications/Wordroot.app/Contents/Info.plist)\""
+        }
+      ]
     }
   }
 }
