@@ -9,6 +9,8 @@
 
 Where did that word come from? Look it up and follow it back, through Latin, Greek, all the way to Proto-Indo-European. A dictionary with the roots showing.
 
+<img src="progress.svg" width="460">
+
 ## Screenshots
 
 <p>
