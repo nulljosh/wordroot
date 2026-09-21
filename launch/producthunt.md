@@ -8,7 +8,7 @@ Description (169): A dictionary that shows where words come from. Clean definiti
 
 Topics: Education, Writing, Productivity
 
-Pricing: Free.
+Pricing: $0.99 upfront on the App Store. Free on the web.
 
 Links
 Web: https://wordroot.heyitsmejosh.com
@@ -21,4 +21,4 @@ Hi, I'm Josh, I built Wordroot.
 
 Dictionaries stop at the definition. The interesting part is the chain behind it. Wordroot looks up any English word and walks it back: Middle English, Old English, Latin, Greek, all the way to Proto-Indo-European where it is known. It is the tool I wanted every time I fell into a Wiktionary hole.
 
-Free. Happy to answer anything.
+The web version is free. The App Store version is $0.99 upfront, buy it once and it's yours. Happy to answer anything.
